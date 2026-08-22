@@ -1,0 +1,16 @@
+{
+  "name": "campusfix-monorepo",
+  "version": "1.0.0",
+  "description": "CampusFix - Smart Campus Problem Solving Platform for Engineering Colleges",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "seed": "cd server && node seed.js",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,340 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { ThemeContext } from '../context/ThemeContext';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Bell,
+  Sun,
+  Moon,
+  LogOut,
+  User as UserIcon,
+  AlertTriangle,
+  ShieldAlert,
+  Bot,
+  ChevronDown,
+  Sparkles,
+  Zap,
+  PanelLeftClose,
+  PanelLeft,
+  QrCode,
+  Clock,
+  CloudSun,
+  CheckCircle2,
+  Activity
+} from 'lucide-react';
+import api from '../services/api';
+
+const Navbar = ({ onToggleSidebar, sidebarOpen, onOpenSOS, onOpenAI }) => {
+  const { user, logout } = useContext(AuthContext);
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    const clockInterval = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(clockInterval);
+    };
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/notifications');
+      if (res.data?.success) {
+        setNotifications(res.data.notifications || []);
+        setUnreadCount(res.data.unreadCount || 0);
+      }
+    } catch {
+      // silent fallback
+    }
+  };
+
+  const markAllRead = async () => {
+    try {
+      await api.put('/notifications/mark-read');
+      setUnreadCount(0);
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const roleBadgeStyle = {
+    student: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+    faculty: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    hod: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    staff: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    teammember: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40 font-extrabold',
+    admin: 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-extrabold'
+  };
+
+  return (
+    <header className="sticky top-0 z-40 h-16 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl transition-all duration-300 shadow-sm">
+      <div className="h-full px-3 sm:px-5 lg:px-6 flex items-center justify-between gap-3">
+        
+        {/* Left Side: Sidebar Toggle & Brand Identity */}
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/90 transition flex items-center justify-center cursor-pointer border border-slate-200 dark:border-slate-800 shadow-sm active:scale-95"
+            title={sidebarOpen ? "Hide Sidebar Navigation" : "Show Sidebar Navigation"}
+          >
+            {sidebarOpen ? (
+              <PanelLeftClose className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+            ) : (
+              <PanelLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+            )}
+          </button>
+
+          {/* Brand Logo with Glowing Halo */}
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+              <ShieldAlert className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-black tracking-tight bg-gradient-to-r from-brand-500 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                  CampusFix
+                </span>
+                <span className="inline-block text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30">
+                  v2.5 AI
+                </span>
+              </div>
+              <span className="hidden sm:block text-[10px] font-bold text-slate-400 dark:text-slate-400">
+                Smart Problem Solving by Team Shubham
+              </span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Center: Live Campus Status & Clock Widget (Desktop only) */}
+        <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 text-xs font-semibold">
+          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>AI Core Active</span>
+          </div>
+          <span className="text-slate-300 dark:text-slate-700">•</span>
+          <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
+            <CloudSun className="w-3.5 h-3.5 text-amber-400" />
+            <span>27°C Campus</span>
+          </div>
+          <span className="text-slate-300 dark:text-slate-700">•</span>
+          <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
+            <Clock className="w-3.5 h-3.5 text-indigo-400" />
+            <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+          </div>
+        </div>
+
+        {/* Right Side: Quick Action Pills & User Profile */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          
+          {/* 1-Tap QR Report Quick Link */}
+          <Link
+            to="/qr-report"
+            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold transition shadow-sm border border-slate-200 dark:border-slate-800"
+            title="1-Tap QR Problem Report"
+          >
+            <QrCode className="w-3.5 h-3.5 text-brand-500" />
+            <span>QR Scan</span>
+          </Link>
+
+          {/* AI Diagnostic Assistant Button */}
+          <button
+            onClick={onOpenAI}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600/15 via-indigo-600/15 to-brand-600/15 hover:from-purple-600/25 hover:to-brand-600/25 text-purple-600 dark:text-purple-300 border border-purple-500/30 text-xs font-extrabold transition shadow-sm cursor-pointer group active:scale-95"
+            title="Campus AI Copilot (Alt + A)"
+          >
+            <Bot className="w-4 h-4 text-purple-500 animate-bounce" />
+            <span className="hidden sm:inline">AI Copilot</span>
+            <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-black">AI</span>
+          </button>
+
+          {/* Emergency SOS Button */}
+          <button
+            onClick={onOpenSOS}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-300 border border-rose-500/30 text-xs font-extrabold transition shadow-sm cursor-pointer active:scale-95"
+            title="Campus Emergency SOS Desk"
+          >
+            <AlertTriangle className="w-4 h-4 text-rose-500 animate-pulse" />
+            <span className="hidden sm:inline">SOS</span>
+          </button>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+            title="Toggle Dark / Light Theme"
+          >
+            {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-500" />}
+          </button>
+
+          {/* Notifications Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition relative cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-lg shadow-rose-500/50">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#0f172a] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 z-50 overflow-hidden animate-scale-in">
+                <div className="px-4 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">Campus Alerts</h4>
+                    {unreadCount > 0 && (
+                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllRead}
+                      className="text-xs text-brand-500 hover:underline font-bold"
+                    >
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-slate-400">
+                      No notifications yet
+                    </div>
+                  ) : (
+                    notifications.map(n => (
+                      <Link
+                        key={n._id || Math.random()}
+                        to={n.linkUrl || '#'}
+                        onClick={() => setShowNotifications(false)}
+                        className={`p-3.5 block hover:bg-slate-50 dark:hover:bg-slate-800/60 transition ${!n.isRead ? 'bg-brand-500/5 dark:bg-brand-500/10' : ''}`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className="mt-0.5">
+                            {n.type === 'Complaint' ? (
+                              <ShieldAlert className="w-4 h-4 text-brand-500" />
+                            ) : (
+                              <Bell className="w-4 h-4 text-emerald-500" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{n.title}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">{n.message}</p>
+                            <span className="text-[10px] text-slate-400 block mt-1">
+                              {n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* User Profile Badge */}
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 p-1 pr-2 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition border border-transparent hover:border-slate-200 dark:hover:border-slate-700 cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white font-black text-xs flex items-center justify-center shadow-md overflow-hidden border border-white/20">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
+                  )}
+                </div>
+                <div className="hidden md:block text-left">
+                  <p className="text-xs font-black text-slate-900 dark:text-white leading-tight truncate max-w-[120px]">
+                    {user.name}
+                  </p>
+                  <span className={`inline-block text-[9px] font-extrabold px-1.5 py-0.2 rounded uppercase border ${roleBadgeStyle[user.role] || 'bg-slate-100 text-slate-700'}`}>
+                    {user.role}
+                  </span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#0f172a] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 py-3 z-50 animate-scale-in">
+                  <div className="px-4 pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow overflow-hidden flex-shrink-0">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-black text-slate-900 dark:text-white truncate">{user.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                      <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.2 rounded capitalize border ${roleBadgeStyle[user.role] || 'bg-slate-100 text-slate-700'}`}>
+                        {user.role} • {user.department}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowUserMenu(false)}
+                      className="px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 flex items-center gap-2.5 transition"
+                    >
+                      <UserIcon className="w-4 h-4 text-brand-500" />
+                      <span>My Profile &amp; Campus ID</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        logout();
+                        navigate('/login');
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-2.5 transition cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white text-xs font-black transition shadow-md shadow-brand-500/25"
+            >
+              Sign In
+            </Link>
+          )}
+
+        </div>
+
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
