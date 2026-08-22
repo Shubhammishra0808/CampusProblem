@@ -344,11 +344,26 @@ const Login = () => {
   const [sandboxResult, setSandboxResult] = useState(null);
   const [sandboxDiagnosing, setSandboxDiagnosing] = useState(false);
 
+  // Embedded Live Interactive Demo Dashboard State
+  const [embeddedDemoRole, setEmbeddedDemoRole] = useState('admin');
+  const [embeddedDemoTickets, setEmbeddedDemoTickets] = useState([
+    { id: 'CF-2026-01', title: 'Ceiling Fan rattling noise in Room C-204', category: 'Electrical', priority: 'High', status: 'In Progress', building: 'Block C', time: '10m ago' },
+    { id: 'CF-2026-02', title: 'Wi-Fi AP offline in Lab 3 (AP-BLK-A3)', category: 'Internet/Wi-Fi', priority: 'Emergency', status: 'Pending', building: 'Block A', time: '25m ago' },
+    { id: 'CF-2026-03', title: 'Water cooler filter replacement Hostel 1', category: 'Water/Plumbing', priority: 'Medium', status: 'Resolved', building: 'Hostel 1', time: '2h ago' }
+  ]);
+  const [embeddedNewTitle, setEmbeddedNewTitle] = useState('');
+  const [embeddedAttendanceMarked, setEmbeddedAttendanceMarked] = useState(false);
+  const [embeddedPasscode, setEmbeddedPasscode] = useState('4589');
+
   // Check URL query parameters & redirected registration state
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('mode') === 'register') {
       setAuthMode('register');
+    }
+    if (params.get('demo') === 'true') {
+      const demoEl = document.getElementById('demo');
+      if (demoEl) demoEl.scrollIntoView({ behavior: 'smooth' });
     }
     if (location.state?.registeredEmail) {
       setEmail(location.state.registeredEmail);
@@ -765,6 +780,10 @@ const Login = () => {
           
           {/* Navigation Links (Desktop) */}
           <nav className="hidden xl:flex items-center gap-1 mr-2 bg-slate-100/70 dark:bg-slate-900/70 p-1 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-xs font-bold text-slate-600 dark:text-slate-300">
+            <a href="#demo" className="px-3 py-1.5 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300 hover:bg-brand-600 hover:text-white border border-brand-500/30 transition-all duration-200 flex items-center gap-1 font-black shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              <span>Live Demo</span>
+            </a>
             <a href="#campus-gis-map" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">GIS Campus Map</a>
             <a href="#smart-whiteboard" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Smart Board</a>
             <a href="#smart-study-hub" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Study Pods</a>
@@ -1464,6 +1483,413 @@ const Login = () => {
 
           </div>
         </div>
+
+        {/* ================= SECTION: 🎮 LIVE INTERACTIVE DEMO DASHBOARD (DEMO PORTAL) ================= */}
+        <section id="demo" className="space-y-6 pt-4">
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border-2 border-brand-500/40 dark:border-brand-500/30 shadow-2xl space-y-6 relative overflow-hidden">
+            
+            {/* Top Header Badge */}
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-brand-500/20 text-brand-600 dark:text-brand-300 border border-brand-500/40 font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-xs animate-pulse">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Live Interactive Demo Dashboard</span>
+                  </span>
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
+                    ● Fully Operational in Browser
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
+                  Experience All 6 Roles Live Right Here
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Switch roles below to test live problem reporting, attendance calculations, IoT telemetry, and work orders in real-time.
+                </p>
+              </div>
+
+              {/* 1-Click Full Dashboard Launch Button */}
+              <button
+                type="button"
+                onClick={() => handleInstantDemoLogin(embeddedDemoRole)}
+                disabled={loading}
+                className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-700 hover:to-purple-700 text-white font-black text-xs shadow-lg shadow-brand-500/25 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer flex-shrink-0"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Launch Full Screen {roles.find(r => r.id === embeddedDemoRole)?.name} App</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Role Switcher Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {roles.map(r => {
+                const Icon = r.icon;
+                const isActive = embeddedDemoRole === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setEmbeddedDemoRole(r.id)}
+                    className={`p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between gap-2 cursor-pointer ${
+                      isActive
+                        ? 'border-brand-500 bg-brand-500/10 ring-2 ring-brand-500/30 shadow-md transform scale-102'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#070b14]/60 hover:border-slate-300 dark:hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className={`w-8 h-8 rounded-xl bg-gradient-to-tr ${r.color} text-white flex items-center justify-center font-bold shadow-sm`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      {isActive && (
+                        <span className="w-2 h-2 rounded-full bg-brand-500 animate-ping"></span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className={`text-xs font-black truncate ${isActive ? 'text-brand-600 dark:text-brand-300 font-extrabold' : 'text-slate-800 dark:text-slate-200'}`}>
+                        {r.name}
+                      </h4>
+                      <span className="text-[10px] text-slate-400 block truncate">
+                        {r.id === 'admin' ? 'Executive Dean' : r.name + ' Workspace'}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Live Interactive Role View Containers */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 dark:bg-[#070b14] border border-slate-200 dark:border-slate-800 space-y-5">
+              
+              {/* 1. ADMIN DEMO VIEW */}
+              {embeddedDemoRole === 'admin' && (
+                <div className="space-y-5 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-5 h-5 text-amber-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        👑 Dean Shubham Mishra — Campus Command &amp; Operations
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">shubhammishra23082004@gmail.com</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">Shubham@123</code>
+                    </span>
+                  </div>
+
+                  {/* Admin KPI Stat Tiles */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Total Tickets</span>
+                      <div className="text-xl font-black text-slate-900 dark:text-white mt-1">15,240</div>
+                      <span className="text-[10px] text-emerald-500 font-bold">↑ 98.4% Solved</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Avg SLA Speed</span>
+                      <div className="text-xl font-black text-brand-600 dark:text-brand-400 mt-1">1.8 Hours</div>
+                      <span className="text-[10px] text-emerald-500 font-bold">⚡ AI Fast-Track</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Active Fleet</span>
+                      <div className="text-xl font-black text-purple-600 dark:text-purple-400 mt-1">48 Assets</div>
+                      <span className="text-[10px] text-emerald-500 font-bold">● 92.4% Healthy</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Field Technicians</span>
+                      <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">12 Online</div>
+                      <span className="text-[10px] text-slate-400 font-bold">4 Active Shifts</span>
+                    </div>
+                  </div>
+
+                  {/* Live Grievance Queue */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[11px]">
+                        Live Incident Dispatch Stream
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newT = {
+                            id: `CF-2026-0${embeddedDemoTickets.length + 1}`,
+                            title: 'Projector HDMI port issue in Hall 201',
+                            category: 'Audio-Visual',
+                            priority: 'High',
+                            status: 'Pending',
+                            building: 'Block A',
+                            time: 'Just now'
+                          };
+                          setEmbeddedDemoTickets([newT, ...embeddedDemoTickets]);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[10px] transition cursor-pointer"
+                      >
+                        + Simulate New Ticket
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {embeddedDemoTickets.map(t => (
+                        <div key={t.id} className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                          <div className="flex items-center gap-2.5">
+                            <span className="font-mono font-black text-[11px] text-slate-400">{t.id}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">{t.title}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold">
+                              📍 {t.building}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                              t.status === 'Resolved' ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' :
+                              t.status === 'In Progress' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400' :
+                              'bg-rose-500/20 text-rose-600 dark:text-rose-400'
+                            }`}>
+                              {t.status}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEmbeddedDemoTickets(embeddedDemoTickets.map(item => item.id === t.id ? { ...item, status: item.status === 'Pending' ? 'In Progress' : 'Resolved' } : item));
+                              }}
+                              className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition cursor-pointer"
+                            >
+                              ⚡ Advance Status
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. STUDENT DEMO VIEW */}
+              {embeddedDemoRole === 'student' && (
+                <div className="space-y-5 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="w-5 h-5 text-blue-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        🎓 Student Portal — Aarav Patel (22CS045)
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">student@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Attendance Safe Zone Widget */}
+                    <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                          📊 75% Attendance Safe Bunk Tracker
+                        </span>
+                        <span className="text-xs font-black text-emerald-500">84.5% (Safe Zone)</span>
+                      </div>
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+                        <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: '84.5%' }}></div>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span>Attended: <strong>101 / 120</strong></span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">🎉 4 Safe Bunks Remaining</span>
+                      </div>
+                    </div>
+
+                    {/* Quick 1-Tap Issue Logger */}
+                    <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        ⚡ Quick 1-Tap Grievance Box
+                      </span>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={embeddedNewTitle}
+                          onChange={e => setEmbeddedNewTitle(e.target.value)}
+                          placeholder="e.g. Washroom tap leaking in Hostel 2"
+                          className="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white text-xs outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!embeddedNewTitle.trim()) return;
+                            const newT = {
+                              id: `CF-2026-0${embeddedDemoTickets.length + 1}`,
+                              title: embeddedNewTitle,
+                              category: 'Hostel Facility',
+                              priority: 'Medium',
+                              status: 'Pending',
+                              building: 'Hostel Block',
+                              time: 'Just now'
+                            };
+                            setEmbeddedDemoTickets([newT, ...embeddedDemoTickets]);
+                            setEmbeddedNewTitle('');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition cursor-pointer"
+                        >
+                          Report
+                        </button>
+                      </div>
+                      <span className="text-[10px] text-slate-400 block">AI Auto-Triage will classify category &amp; dispatch nearest technician.</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 3. FACULTY DEMO VIEW */}
+              {embeddedDemoRole === 'faculty' && (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-emerald-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        👨‍🏫 Faculty Suite — Dr. Suresh Kumar (CSE Dept)
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">faculty@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Classroom 104 AV Status</span>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <span className="text-xs font-bold text-slate-900 dark:text-white">Projector &amp; Wi-Fi OK</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => alert('Classroom AV check pinged to Audio-Visual Crew!')}
+                        className="w-full py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300"
+                      >
+                        Ping AV Tech
+                      </button>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Live Attendance Code</span>
+                      <div className="text-lg font-black font-mono text-brand-600 dark:text-brand-400">{embeddedPasscode}</div>
+                      <button
+                        type="button"
+                        onClick={() => setEmbeddedPasscode(String(Math.floor(1000 + Math.random() * 9000)))}
+                        className="w-full py-1 rounded-lg bg-brand-500/15 text-[10px] font-bold text-brand-600 dark:text-brand-300"
+                      >
+                        Generate New Code
+                      </button>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Study Resources</span>
+                      <div className="text-sm font-black text-slate-900 dark:text-white">4 Files Uploaded</div>
+                      <span className="text-[10px] text-emerald-500 font-bold">240 Student Downloads</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 4. HOD DEMO VIEW */}
+              {embeddedDemoRole === 'hod' && (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <User className="w-5 h-5 text-rose-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        🏛️ HOD Academic Suite — Prof. Anjali Verma (Computer Science)
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">hod@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] font-black uppercase text-slate-400">CSE Grievance Score</span>
+                      <div className="text-xl font-black text-emerald-500 mt-1">98.2%</div>
+                      <span className="text-[10px] text-slate-400">0 Critical Escalations</span>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Department Labs</span>
+                      <div className="text-xl font-black text-slate-900 dark:text-white mt-1">8 Active Labs</div>
+                      <span className="text-[10px] text-brand-500">All Equipment Calibrated</span>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                      <span className="text-[10px] font-black uppercase text-slate-400">Faculty Roster</span>
+                      <div className="text-xl font-black text-slate-900 dark:text-white mt-1">18 Professors</div>
+                      <span className="text-[10px] text-emerald-500">100% Attendance Verified</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 5. STAFF DEMO VIEW */}
+              {embeddedDemoRole === 'staff' && (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <BriefcaseBusiness className="w-5 h-5 text-purple-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        🔧 Field Technician Desk — Ramesh Electrician (Senior Staff)
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">staff@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-xs font-black uppercase text-slate-400">Assigned Work Orders</span>
+                    <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+                      <div>
+                        <h5 className="text-xs font-bold text-slate-900 dark:text-white">Ceiling Fan Motor Replacement (Room C-204)</h5>
+                        <p className="text-[10px] text-slate-400">Required: 75W Capacitor • Physical Location: Academic Block C</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => alert('Work Order marked as completed with digital proof!')}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer"
+                      >
+                        ✓ Mark Completed
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 6. TEAM LEAD DEMO VIEW */}
+              {embeddedDemoRole === 'teammember' && (
+                <div className="space-y-4 animate-fadeIn">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-cyan-500" />
+                      <span className="font-black text-slate-900 dark:text-white text-sm">
+                        ⚡ Core Committee Command — Rohan Sharma (Team Lead)
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">team@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    </span>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                    <span className="text-xs font-black uppercase text-slate-400">Campus Notice Broadcaster</span>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                      📢 Broadcasts live announcements instantly across the student ticker bar and campus mobile apps.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleInstantDemoLogin('teammember')}
+                      className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition cursor-pointer"
+                    >
+                      Open Broadcast Dispatcher →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+          </div>
+        </section>
 
         {/* ================= SECTION: 🗺️ INTERACTIVE LIVE CAMPUS GIS MAP ================= */}
         <section id="campus-gis-map" className="space-y-6 pt-6">

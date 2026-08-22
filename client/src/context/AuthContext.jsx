@@ -32,11 +32,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
-    if (res.data.success) {
-      setToken(res.data.token);
-      setUser(res.data.user);
+    if (res.data && res.data.success) {
       localStorage.setItem('campusfix_token', res.data.token);
       localStorage.setItem('campusfix_user', JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
     }
     return res.data;
   };
@@ -48,22 +48,22 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithOTP = async (phone, otp, role = 'student') => {
     const res = await api.post('/auth/verify-otp', { phone, otp, role });
-    if (res.data.success) {
-      setToken(res.data.token);
-      setUser(res.data.user);
+    if (res.data && res.data.success) {
       localStorage.setItem('campusfix_token', res.data.token);
       localStorage.setItem('campusfix_user', JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
     }
     return res.data;
   };
 
   const register = async (userData, autoLogin = true) => {
     const res = await api.post('/auth/register', userData);
-    if (res.data.success && autoLogin) {
-      setToken(res.data.token);
-      setUser(res.data.user);
+    if (res.data && res.data.success && autoLogin) {
       localStorage.setItem('campusfix_token', res.data.token);
       localStorage.setItem('campusfix_user', JSON.stringify(res.data.user));
+      setToken(res.data.token);
+      setUser(res.data.user);
     }
     return res.data;
   };

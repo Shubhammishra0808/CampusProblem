@@ -18,6 +18,16 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const location = useLocation();
 
+  const storedToken = token || localStorage.getItem('campusfix_token');
+  let currentUser = user;
+  if (!currentUser) {
+    try {
+      currentUser = JSON.parse(localStorage.getItem('campusfix_user') || 'null');
+    } catch (e) {
+      currentUser = null;
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0b1120] transition-colors duration-300">
@@ -29,15 +39,15 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     );
   }
 
-  if (!token || !user) {
+  if (!storedToken || !currentUser) {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    if (user.role === 'admin') return <Navigate to="/admin" replace />;
-    if (user.role === 'teammember') return <Navigate to="/team-dashboard" replace />;
-    if (user.role === 'hod' || user.role === 'faculty') return <Navigate to="/faculty" replace />;
-    if (user.role === 'staff') return <Navigate to="/staff" replace />;
+  if (allowedRoles.length > 0 && !allowedRoles.includes(currentUser.role)) {
+    if (currentUser.role === 'admin') return <Navigate to="/admin" replace />;
+    if (currentUser.role === 'teammember') return <Navigate to="/team-dashboard" replace />;
+    if (currentUser.role === 'hod' || currentUser.role === 'faculty') return <Navigate to="/faculty" replace />;
+    if (currentUser.role === 'staff') return <Navigate to="/staff" replace />;
     return <Navigate to="/student" replace />;
   }
 
