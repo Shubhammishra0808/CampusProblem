@@ -13,22 +13,28 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkLoggedIn = async () => {
-      if (token) {
+      const storedToken = localStorage.getItem('campusfix_token');
+      const savedUserStr = localStorage.getItem('campusfix_user');
+
+      if (storedToken && savedUserStr) {
         try {
+          const parsedUser = JSON.parse(savedUserStr);
+          setUser(parsedUser);
+          setToken(storedToken);
+
           const res = await api.get('/auth/me');
-          if (res.data.success) {
+          if (res?.data?.success && res.data.user) {
             setUser(res.data.user);
             localStorage.setItem('campusfix_user', JSON.stringify(res.data.user));
           }
         } catch (err) {
-          console.error('Session expired or invalid:', err);
-          logout();
+          console.warn('Session check fallback to cached user:', err);
         }
       }
       setLoading(false);
     };
     checkLoggedIn();
-  }, [token]);
+  }, []);
 
   const login = async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
