@@ -5,22 +5,26 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('campusfix_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('campusfix_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('campusfix_token'));
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(() => localStorage.getItem('campusfix_token') || null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const checkLoggedIn = async () => {
+    const syncUser = async () => {
       const storedToken = localStorage.getItem('campusfix_token');
       const savedUserStr = localStorage.getItem('campusfix_user');
 
       if (storedToken && savedUserStr) {
         try {
           const parsedUser = JSON.parse(savedUserStr);
-          setUser(parsedUser);
-          setToken(storedToken);
+          if (!user) setUser(parsedUser);
+          if (!token) setToken(storedToken);
 
           const res = await api.get('/auth/me');
           if (res?.data?.success && res.data.user) {
@@ -28,12 +32,11 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('campusfix_user', JSON.stringify(res.data.user));
           }
         } catch (err) {
-          console.warn('Session check fallback to cached user:', err);
+          // keep cached user
         }
       }
-      setLoading(false);
     };
-    checkLoggedIn();
+    syncUser();
   }, []);
 
   const login = async (email, password) => {

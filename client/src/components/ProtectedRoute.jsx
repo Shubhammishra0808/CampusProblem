@@ -8,6 +8,8 @@ import AIAssistantModal from './AIAssistantModal';
 import CampusBroadcastTicker from './CampusBroadcastTicker';
 import BreadcrumbBar from './BreadcrumbBar';
 
+import ErrorBoundary from './ErrorBoundary';
+
 const ProtectedRoute = ({ allowedRoles = [] }) => {
   const { user, token, loading } = useContext(AuthContext);
   // Default open on wide desktop screens (>=1024px), closed on small mobile
@@ -43,11 +45,20 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(currentUser.role)) {
-    if (currentUser.role === 'admin') return <Navigate to="/admin" replace />;
-    if (currentUser.role === 'teammember') return <Navigate to="/team-dashboard" replace />;
-    if (currentUser.role === 'hod' || currentUser.role === 'faculty') return <Navigate to="/faculty" replace />;
-    if (currentUser.role === 'staff') return <Navigate to="/staff" replace />;
+  const normalizeRole = (r) => {
+    const s = (r || '').toLowerCase().trim();
+    if (s === 'team' || s === 'teammember') return 'teammember';
+    return s;
+  };
+
+  const userRole = normalizeRole(currentUser.role);
+  const normalizedAllowed = allowedRoles.map(normalizeRole);
+
+  if (normalizedAllowed.length > 0 && !normalizedAllowed.includes(userRole)) {
+    if (userRole === 'admin') return <Navigate to="/admin" replace />;
+    if (userRole === 'teammember') return <Navigate to="/team-dashboard" replace />;
+    if (userRole === 'hod' || userRole === 'faculty') return <Navigate to="/faculty" replace />;
+    if (userRole === 'staff') return <Navigate to="/staff" replace />;
     return <Navigate to="/student" replace />;
   }
 
@@ -85,7 +96,9 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
             {/* Universal Breadcrumb & Back Navigation Bar */}
             <BreadcrumbBar />
             
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </main>
 
