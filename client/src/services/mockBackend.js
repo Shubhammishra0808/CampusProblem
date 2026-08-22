@@ -540,6 +540,127 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     };
   }
 
+  // --- 1.1 NOTIFICATIONS ---
+  if (cleanUrl.startsWith('/notifications')) {
+    return {
+      data: {
+        success: true,
+        unreadCount: 2,
+        notifications: [
+          { _id: 'notif_1', title: 'Ticket Status Update', message: 'Complaint CF-2026-0001 assigned to Ramesh Technician.', isRead: false, createdAt: new Date().toISOString() },
+          { _id: 'notif_2', title: 'Campus Alert', message: 'Scheduled generator maintenance in Block B today at 4:00 PM.', isRead: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
+          { _id: 'notif_3', title: 'Attendance Verified', message: '75% safe criteria verified for Computer Networks.', isRead: true, createdAt: new Date(Date.now() - 86400000).toISOString() }
+        ]
+      }
+    };
+  }
+
+  // --- 1.2 ADMIN & DASHBOARD STATS ---
+  if (cleanUrl.startsWith('/admin/dashboard-stats')) {
+    return {
+      data: {
+        success: true,
+        stats: {
+          totalStudents: 1240,
+          totalComplaints: complaints.length || 24,
+          pendingComplaints: complaints.filter(c => c.status === 'Pending').length || 4,
+          resolvedComplaints: complaints.filter(c => c.status === 'Resolved').length || 18,
+          emergencyComplaints: complaints.filter(c => c.priority === 'Emergency').length || 1,
+          resolutionRate: 94.8,
+          avgResolutionHours: 1.8,
+          mostProblematicBuilding: 'Academic Block C (Labs)',
+          mostCommonCategory: 'Electrical & Internet'
+        },
+        charts: {
+          byCategory: [
+            { name: 'Electrical', count: 8 },
+            { name: 'Water/Plumb', count: 5 },
+            { name: 'Internet/Wi-Fi', count: 7 },
+            { name: 'Classroom', count: 3 },
+            { name: 'Hostel', count: 4 }
+          ],
+          monthlyTrend: [
+            { name: 'Sep', Complaints: 12, Resolved: 10 },
+            { name: 'Oct', Complaints: 18, Resolved: 16 },
+            { name: 'Nov', Complaints: 14, Resolved: 13 },
+            { name: 'Dec', Complaints: 22, Resolved: 21 },
+            { name: 'Jan', Complaints: 19, Resolved: 19 },
+            { name: 'Feb', Complaints: 15, Resolved: 14 }
+          ]
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/admin/campus-heatmap')) {
+    return {
+      data: {
+        success: true,
+        heatmap: [
+          { _id: 'bld_1', code: 'BLK-A', name: 'Academic Block A', category: 'Academic', floors: 4, inChargeName: 'Prof. Sharma', contactPhone: '9876543201', severity: 'Green', activeComplaints: 1, emergencyComplaints: 0 },
+          { _id: 'bld_2', code: 'BLK-B', name: 'Academic Block B', category: 'Academic', floors: 4, inChargeName: 'Dr. Ramesh', contactPhone: '9876543202', severity: 'Yellow', activeComplaints: 3, emergencyComplaints: 0 },
+          { _id: 'bld_3', code: 'BLK-C', name: 'Academic Block C (Labs)', category: 'Laboratories', floors: 3, inChargeName: 'Prof. Verma', contactPhone: '9876543203', severity: 'Red', activeComplaints: 5, emergencyComplaints: 1 },
+          { _id: 'bld_4', code: 'HST-1', name: 'Boys Hostel 1', category: 'Residential', floors: 5, inChargeName: 'Warden Gupta', contactPhone: '9876543204', severity: 'Yellow', activeComplaints: 2, emergencyComplaints: 0 },
+          { _id: 'bld_5', code: 'HST-2', name: 'Girls Hostel 1', category: 'Residential', floors: 5, inChargeName: 'Warden Sharma', contactPhone: '9876543205', severity: 'Green', activeComplaints: 0, emergencyComplaints: 0 },
+          { _id: 'bld_6', code: 'LIB-1', name: 'Central Library', category: 'Facilities', floors: 3, inChargeName: 'Chief Librarian Patel', contactPhone: '9876543206', severity: 'Green', activeComplaints: 1, emergencyComplaints: 0 },
+          { _id: 'bld_7', code: 'CAF-1', name: 'Student Cafeteria & Mess', category: 'Amenities', floors: 2, inChargeName: 'Mess Manager Rao', contactPhone: '9876543207', severity: 'Green', activeComplaints: 0, emergencyComplaints: 0 },
+          { _id: 'bld_8', code: 'SPT-1', name: 'Sports Complex & Gym', category: 'Athletics', floors: 2, inChargeName: 'Coach Singh', contactPhone: '9876543208', severity: 'Green', activeComplaints: 0, emergencyComplaints: 0 }
+        ]
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/admin/users')) {
+    return {
+      data: {
+        success: true,
+        users: users
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/admin/complaints')) {
+    return {
+      data: {
+        success: true,
+        count: complaints.length,
+        complaints: complaints
+      }
+    };
+  }
+
+  // --- 1.3 FACULTY & STAFF ROUTES ---
+  if (cleanUrl.startsWith('/faculty/attendance/quick-code')) {
+    return { data: { success: true, code: '4589' } };
+  }
+
+  if (cleanUrl.startsWith('/faculty/stats')) {
+    return {
+      data: {
+        success: true,
+        stats: {
+          assignedComplaints: 4,
+          resolvedComplaints: 18,
+          activeLectures: 3,
+          totalStudents: 180
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/staff/stats')) {
+    return {
+      data: {
+        success: true,
+        stats: {
+          assignedComplaints: 5,
+          completedToday: 3,
+          pendingSpares: 1
+        }
+      }
+    };
+  }
+
   // --- 2. COMPLAINT ROUTES ---
   if (cleanUrl.startsWith('/complaints/track/')) {
     const ticketId = cleanUrl.split('/track/')[1];
