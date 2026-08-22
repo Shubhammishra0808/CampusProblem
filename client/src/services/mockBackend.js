@@ -409,37 +409,56 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
   // --- 1. AUTH ROUTES ---
   if (cleanUrl.startsWith('/auth/login')) {
     const { email, password } = data || {};
-    const foundUser = users.find(u => u.email.toLowerCase() === (email || '').trim().toLowerCase());
+    const normEmail = (email || '').trim().toLowerCase();
     
-    // Check credentials or allow demo logins
-    if (foundUser && (foundUser.password === password || password === 'Shubham@123' || password === 'password123')) {
+    // Look in current users or fallback to INITIAL_USERS
+    let foundUser = users.find(u => u.email.toLowerCase() === normEmail);
+    if (!foundUser) {
+      foundUser = INITIAL_USERS.find(u => u.email.toLowerCase() === normEmail);
+      if (foundUser) {
+        users.push(foundUser);
+        setCollection(STORAGE_KEYS.USERS, users);
+      }
+    }
+
+    // Admin email matching (Shubham Mishra)
+    if (normEmail.includes('shubham') || normEmail.includes('admin@campusfix.edu')) {
+      const adminUser = users.find(u => u.role === 'admin') || INITIAL_USERS[0];
+      const token = `mock_jwt_token_admin_${Date.now()}`;
+      return {
+        data: {
+          success: true,
+          token,
+          user: adminUser,
+          message: 'Admin Sign in successful'
+        }
+      };
+    }
+
+    // If user is found, allow login
+    if (foundUser) {
       const token = `mock_jwt_token_${foundUser._id}_${Date.now()}`;
       return {
         data: {
           success: true,
           token,
           user: foundUser,
-          message: 'Login successful'
-        }
-      };
-    }
-    
-    // If not found in seed but matches shubhammishra admin email
-    if (email?.toLowerCase().includes('shubham') && password === 'Shubham@123') {
-      const adminUser = users[0];
-      return {
-        data: {
-          success: true,
-          token: `mock_jwt_token_admin_${Date.now()}`,
-          user: adminUser,
-          message: 'Admin Login successful'
+          message: 'Sign in successful'
         }
       };
     }
 
-    const err = new Error('Invalid email or password');
-    err.response = { status: 401, data: { success: false, message: 'Invalid credentials. Try demo password: password123 or Shubham@123' } };
-    throw err;
+    // Role-based fallback matching
+    const fallbackUser = INITIAL_USERS.find(u => normEmail.includes(u.role)) || INITIAL_USERS[5];
+    const token = `mock_jwt_token_${fallbackUser._id}_${Date.now()}`;
+    return {
+      data: {
+        success: true,
+        token,
+        user: fallbackUser,
+        message: `Welcome back, ${fallbackUser.name}!`
+      }
+    };
   }
 
   if (cleanUrl.startsWith('/auth/send-otp')) {

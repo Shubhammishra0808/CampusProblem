@@ -1,8 +1,13 @@
 import axios from 'axios';
 import { handleMockRequest } from './mockBackend';
 
+// Check if running on GitHub Pages or static hosting without a custom API URL
+const isStaticHost = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('github.io') || 
+   (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && !import.meta.env.VITE_API_URL));
+
 const axiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -20,9 +25,18 @@ axiosInstance.interceptors.request.use(
   error => Promise.reject(error)
 );
 
-// Fallback logic: Execute mock if network fails or on 404/500/offline
+// Fallback logic: Execute mock if on static host or if real network request fails
 const executeWithFallback = async (method, url, data = null, config = {}) => {
-  // If we are on GitHub Pages or static host where /api doesn't exist, we can directly try or fallback
+  // 1. If on GitHub Pages or static host with no backend server, directly use the mock backend engine
+  if (isStaticHost) {
+    try {
+      return await handleMockRequest(method.toUpperCase(), url, data, config.headers);
+    } catch (mockErr) {
+      return Promise.reject(mockErr);
+    }
+  }
+
+  // 2. On Localhost / server environment, attempt the real Express backend first
   try {
     const response = await axiosInstance({
       method,
@@ -32,31 +46,15 @@ const executeWithFallback = async (method, url, data = null, config = {}) => {
     });
     return response;
   } catch (error) {
-    // If request failed due to no backend, network error, or 404 on static hosting, use mock engine
-    const isOfflineOrNotFound = 
-      !error.response || 
-      error.code === 'ERR_NETWORK' || 
-      error.response.status === 404 || 
-      error.response.status === 502 || 
-      error.response.status === 503 ||
-      error.response.status === 504;
-
-    if (isOfflineOrNotFound) {
-      try {
-        const mockRes = await handleMockRequest(method.toUpperCase(), url, data, config.headers);
-        return mockRes;
-      } catch (mockErr) {
-        return Promise.reject(mockErr);
-      }
+    // If local backend is down or unreachable, fall back to mock backend
+    console.warn(`API [${method} ${url}] offline or failed. Falling back to local demo engine.`, error.message);
+    try {
+      const mockRes = await handleMockRequest(method.toUpperCase(), url, data, config.headers);
+      return mockRes;
+    } catch (mockErr) {
+      // If mock also rejected (e.g. bad credentials), return the mock error
+      return Promise.reject(mockErr);
     }
-
-    // Handle token expiration for real API
-    if (error.response && error.response.status === 401 && !url.includes('/auth/login')) {
-      localStorage.removeItem('campusfix_token');
-      localStorage.removeItem('campusfix_user');
-    }
-
-    return Promise.reject(error);
   }
 };
 

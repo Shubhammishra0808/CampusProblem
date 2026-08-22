@@ -365,9 +365,9 @@ const Login = () => {
   const [loginMethod, setLoginMethod] = useState('password');
 
   // Password Login State
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
+  const [email, setEmail] = useState('shubhammishra23082004@gmail.com');
+  const [password, setPassword] = useState('Shubham@123');
+  const [role, setRole] = useState('admin');
   const [showPassword, setShowPassword] = useState(false);
 
   // OTP Form State
