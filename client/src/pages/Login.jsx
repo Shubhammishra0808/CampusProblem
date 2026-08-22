@@ -476,11 +476,12 @@ const Login = () => {
   }, [countdown]);
 
   const handleRoleRedirect = (userRole) => {
-    if (userRole === 'admin') navigate('/admin');
-    else if (userRole === 'teammember') navigate('/team-dashboard');
-    else if (userRole === 'hod') navigate('/hod');
-    else if (userRole === 'faculty') navigate('/faculty');
-    else if (userRole === 'staff') navigate('/staff');
+    const r = (userRole || role || 'student').toLowerCase();
+    if (r === 'admin') navigate('/admin');
+    else if (r === 'teammember' || r === 'team') navigate('/team-dashboard');
+    else if (r === 'hod') navigate('/hod');
+    else if (r === 'faculty') navigate('/faculty');
+    else if (r === 'staff') navigate('/staff');
     else navigate('/student');
   };
 
@@ -544,16 +545,55 @@ const Login = () => {
 
   // Password Login Handler
   const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setError('');
     setSuccessMsg('');
     setLoading(true);
 
     try {
       const data = await login(email, password);
+      handleRoleRedirect(data?.user?.role || role);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || err.message || 'Failed to sign in. Please check your email and password.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 1-Click Direct Demo Sign-in Handler
+  const handleInstantDemoLogin = async (targetRole) => {
+    setError('');
+    setSuccessMsg('');
+    setLoading(true);
+    try {
+      let demoEmail = 'shubhammishra23082004@gmail.com';
+      let demoPass = 'Shubham@123';
+      if (targetRole === 'student') {
+        demoEmail = 'student@campusfix.edu';
+        demoPass = 'password123';
+      } else if (targetRole === 'faculty') {
+        demoEmail = 'faculty@campusfix.edu';
+        demoPass = 'password123';
+      } else if (targetRole === 'hod') {
+        demoEmail = 'hod@campusfix.edu';
+        demoPass = 'password123';
+      } else if (targetRole === 'staff') {
+        demoEmail = 'staff@campusfix.edu';
+        demoPass = 'password123';
+      } else if (targetRole === 'teammember') {
+        demoEmail = 'team@campusfix.edu';
+        demoPass = 'password123';
+      }
+      setEmail(demoEmail);
+      setPassword(demoPass);
+      setRole(targetRole);
+
+      const data = await login(demoEmail, demoPass);
       handleRoleRedirect(data.user.role);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to sign in. Please check your email and password.');
+      console.error(err);
+      setError('Instant demo sign-in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -1164,6 +1204,62 @@ const Login = () => {
                         </button>
                       </form>
                     )}
+
+                    {/* ⚡ 1-Click Direct Demo Launch Bar */}
+                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                          ⚡ 1-Click Direct Demo Sign-in
+                        </span>
+                        <a href="#roles" className="text-[10px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
+                          All Portals ↓
+                        </a>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('admin')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          👑 Admin (Shubham)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('student')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          🎓 Student Demo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('faculty')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          👨‍🏫 Faculty Demo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('hod')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          🏛️ HOD Demo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('staff')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          🔧 Staff Demo
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin('teammember')}
+                          className="p-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
+                        >
+                          ⚡ Team Lead
+                        </button>
+                      </div>
+                    </div>
 
                   {/* OTP Form */}
                   {loginMethod === 'otp' && (
@@ -2036,55 +2132,93 @@ const Login = () => {
           </div>
         </section>
 
-        {/* ================= SECTION 4: 6-TIER ROLE ECOSYSTEM ================= */}
+        {/* ================= SECTION 4: ⚡ INTERACTIVE DEMO PORTALS & 1-CLICK SIGN-IN ================= */}
         <section id="roles" className="space-y-6 pt-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-[11px] font-black uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-3 py-1 rounded-full border border-brand-200 dark:border-brand-500/30">
-              👥 Multi-Tier Governance
+              ⚡ Live Demo Portals &amp; 1-Click Sign-In
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              Dedicated Workspaces for Every Campus Stakeholder
+              Explore All 6 Campus Workspaces Instantly
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-              Every persona gets custom permissions, dedicated KPI dashboards, and tailored operational workflows.
+              Click the <strong>"⚡ Launch Demo Dashboard"</strong> button on any role below to immediately enter that portal with pre-configured demo data!
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {roles.map(r => {
               const Icon = r.icon;
+              const demoEmail = r.id === 'admin' 
+                ? 'shubhammishra23082004@gmail.com' 
+                : `${r.id === 'teammember' ? 'team' : r.id}@campusfix.edu`;
+              const demoPass = r.id === 'admin' ? 'Shubham@123' : 'password123';
+              
               return (
                 <div
                   key={r.id}
-                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 hover:border-brand-500/50 transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-xl group"
+                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 hover:border-brand-500/50 transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-xl group flex flex-col justify-between"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-black shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-black text-slate-900 dark:text-white">{r.name} Suite</h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{r.description}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5 pt-1">
-                    {r.features.map((feat, i) => (
-                      <div key={i} className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
-                        <span>{feat}</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-2xl bg-gradient-to-tr ${r.color} text-white flex items-center justify-center font-black shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-black text-slate-900 dark:text-white">{r.name} Portal</h4>
+                          <span className="text-[10px] text-brand-600 dark:text-brand-400 font-bold">
+                            {r.id === 'admin' ? '👑 Executive Dean Desk' : 'Verified Stakeholder'}
+                          </span>
+                        </div>
                       </div>
-                    ))}
+                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                        Live Demo
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                      {r.description}
+                    </p>
+
+                    {/* Features List */}
+                    <div className="space-y-1.5 pt-1">
+                      {r.features.map((feat, i) => (
+                        <div key={i} className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                          <Check className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Demo Credentials Box */}
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1 text-[11px]">
+                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+                        <span>Email:</span>
+                        <code className="font-bold text-slate-900 dark:text-white text-[10px] bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded truncate max-w-[170px]">
+                          {demoEmail}
+                        </code>
+                      </div>
+                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+                        <span>Password:</span>
+                        <code className="font-bold text-slate-900 dark:text-white text-[10px] bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                          {demoPass}
+                        </code>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-bold">
-                    <span className="flex items-center gap-1 text-brand-600 dark:text-brand-400">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Role Verified
-                    </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                      SLA Fast-Track
-                    </span>
-                  </div>
+                  {/* 1-Click Launch Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleInstantDemoLogin(r.id)}
+                    disabled={loading}
+                    className={`w-full py-2.5 rounded-xl bg-gradient-to-r ${r.color} text-white font-black text-xs shadow-md shadow-brand-500/20 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer transform hover:scale-102 active:scale-98 mt-2`}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                    <span>Launch {r.name} Demo Dashboard</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               );
             })}
