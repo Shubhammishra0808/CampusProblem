@@ -18,16 +18,17 @@
 
 ## 🔑 Demo Login Credentials
 
-The platform features built-in **1-Click Demo Login** and role auto-filling:
+The platform features role-based access control for students, faculty, and staff:
 
 | Role | Name | Email | Password |
 | :--- | :--- | :--- | :--- |
-| **👑 Campus Admin** | Shubham Mishra | `shubhammishra23082004@gmail.com` | `Shubham@123` |
 | **🎓 Student** | Aarav Patel | `student@campusfix.edu` | `password123` |
 | **👨‍🏫 Faculty** | Dr. Suresh Kumar | `faculty@campusfix.edu` | `password123` |
 | **🏛️ HOD (CSE)** | Prof. Anjali Verma | `hod@campusfix.edu` | `password123` |
 | **🔧 Staff / Electrician** | Ramesh Technician | `staff@campusfix.edu` | `password123` |
 | **⚡ Core Team Member** | Rohan Sharma | `team@campusfix.edu` | `password123` |
+
+> *Note: Campus Administrator accounts are provisioned via secure internal institutional environment variables.*
 
 ---
 

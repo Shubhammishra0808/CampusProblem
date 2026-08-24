@@ -20,14 +20,14 @@ const STORAGE_KEYS = {
 const INITIAL_USERS = [
   {
     _id: 'user_admin_001',
-    name: 'Shubham Mishra (Campus Admin)',
-    email: 'shubhammishra23082004@gmail.com',
-    password: 'Shubham@123',
+    name: 'Campus Administrator',
+    email: 'admin@campusfix.edu',
+    password: 'admin123',
     role: 'admin',
     department: 'Administration',
     employeeId: 'ADM-001',
     designation: 'Dean of Student Welfare & Campus Admin',
-    phone: '9876500001',
+    phone: '9876500000',
     isApproved: true,
     approvalStatus: 'approved',
     createdAt: new Date().toISOString()
@@ -421,8 +421,8 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
       }
     }
 
-    // Admin email matching (Shubham Mishra)
-    if (normEmail.includes('shubham') || normEmail.includes('admin@campusfix.edu')) {
+    // Admin email matching
+    if (normEmail === 'admin@campusfix.edu' || normEmail === 'admin' || normEmail.startsWith('admin@')) {
       const adminUser = users.find(u => u.role === 'admin') || INITIAL_USERS[0];
       const token = `mock_jwt_token_admin_${Date.now()}`;
       return {
@@ -927,7 +927,7 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
         success: true,
         contacts: [
           { _id: 'c_ai', name: '🤖 CampusFix AI Copilot', role: 'ai', status: 'online' },
-          { _id: 'c_dean', name: '👑 Dean & Campus Admin (Shubham Mishra)', role: 'admin', status: 'online' },
+          { _id: 'c_dean', name: '👑 Dean & Campus Administration', role: 'admin', status: 'online' },
           { _id: 'c_hod', name: 'Prof. Anjali Verma (HOD CSE)', role: 'hod', status: 'online' },
           { _id: 'c_staff', name: 'Ramesh Electrician (Maintenance)', role: 'staff', status: 'online' },
           { _id: 'c_team', name: 'Core Operations Team Lead', role: 'teammember', status: 'online' }
