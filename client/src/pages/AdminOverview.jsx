@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import api from '../services/api';
 import { Link } from 'react-router-dom';
 import {
@@ -31,6 +32,9 @@ import {
 import Heatmap from '../components/Heatmap';
 
 const AdminOverview = () => {
+  const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
+
   const defaultStats = {
     totalStudents: 1240,
     totalComplaints: 24,

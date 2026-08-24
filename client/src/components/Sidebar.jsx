@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   Home,
   FileText,
@@ -30,6 +31,7 @@ import {
 
 const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
   const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
 
   const getNavSections = () => {
     if (!user) return [];
@@ -44,7 +46,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
               { name: 'Smart Attendance Grid', path: '/attendance', icon: CalendarCheck2 },
               { name: 'Predictive Fleet Health', path: '/predictive-maintenance', icon: Activity },
               { name: 'Manage Complaints', path: '/admin/complaints', icon: ClipboardList },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
               { name: 'User Management', path: '/admin/users', icon: Users },
               { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
@@ -63,7 +65,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
             section: 'Account & Safety',
             links: [
               { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle, highlight: true },
-              { name: 'Admin Profile', path: '/profile', icon: User }
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -73,27 +75,27 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
           {
             section: 'Core Team Command',
             links: [
-              { name: 'Team Command Hub', path: '/team-dashboard', icon: LayoutDashboard },
+              { name: 'Team Member Command Hub', path: '/team-dashboard', icon: LayoutDashboard },
               { name: 'Predictive Fleet Health', path: '/predictive-maintenance', icon: Activity },
-              { name: 'Dispatch Staff & Tasks', path: '/admin/complaints', icon: ClipboardList },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
+              { name: 'Manage Complaints', path: '/admin/complaints', icon: ClipboardList },
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
               { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
           },
           {
             section: 'Campus Resources',
             links: [
-              { name: 'Broadcast Notice', path: '/notices', icon: Bell },
-              { name: 'Study Notes & PYQs', path: '/resources', icon: BookOpen },
-              { name: 'Placements Center', path: '/placements', icon: Briefcase },
+              { name: 'Notice Board', path: '/notices', icon: Bell },
+              { name: 'Study Resources & Notes', path: '/resources', icon: BookOpen },
+              { name: 'Placements & Drives', path: '/placements', icon: Briefcase },
               { name: 'Faculty Directory', path: '/faculty-directory', icon: Users }
             ]
           },
           {
-            section: 'Safety & Self',
+            section: 'Account & Safety',
             links: [
-              { name: 'Emergency Helpdesk', path: '/emergency', icon: AlertTriangle, highlight: true },
-              { name: 'My Profile', path: '/profile', icon: User }
+              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle, highlight: true },
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -103,29 +105,29 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
           {
             section: 'Department Portal',
             links: [
-              { name: 'HOD Academic Desk', path: '/faculty', icon: LayoutDashboard },
+              { name: 'Faculty Directory', path: '/faculty', icon: LayoutDashboard },
               { name: 'Smart Attendance Grid', path: '/attendance', icon: CalendarCheck2 },
               { name: 'Predictive Fleet Health', path: '/predictive-maintenance', icon: Activity },
-              { name: 'Department Complaints', path: '/admin/complaints', icon: ClipboardList },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
-              { name: 'Online Chat Desk', path: '/chat', icon: MessageSquare }
+              { name: 'Manage Complaints', path: '/admin/complaints', icon: ClipboardList },
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
+              { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
           },
           {
             section: 'Academic Supervision',
             links: [
-              { name: 'Department Notices', path: '/notices', icon: Bell },
-              { name: 'Course Materials & Notes', path: '/resources', icon: BookOpen },
-              { name: 'Placement Opportunities', path: '/placements', icon: Briefcase },
+              { name: 'Notice Board', path: '/notices', icon: Bell },
+              { name: 'Study Resources & Notes', path: '/resources', icon: BookOpen },
+              { name: 'Placements & Drives', path: '/placements', icon: Briefcase },
               { name: 'Faculty Directory', path: '/faculty-directory', icon: Users }
             ]
           },
           {
-            section: 'Personal & Support',
+            section: 'Account & Safety',
             links: [
-              { name: 'Submit Feedback', path: '/feedback', icon: MessageSquare },
-              { name: 'Emergency Help', path: '/emergency', icon: AlertTriangle },
-              { name: 'HOD Profile', path: '/profile', icon: User }
+              { name: 'Campus Feedback & Suggestions', path: '/feedback', icon: MessageSquare },
+              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle },
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -135,28 +137,27 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
           {
             section: 'Faculty Workstation',
             links: [
-              { name: 'Faculty Home', path: '/faculty', icon: LayoutDashboard },
+              { name: 'Faculty Directory', path: '/faculty', icon: LayoutDashboard },
               { name: 'Mark Class Attendance', path: '/attendance', icon: CalendarCheck2 },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
-              { name: 'Report Classroom Issue', path: '/complaints/new', icon: PlusCircle },
-              { name: 'My Submissions', path: '/complaints/my', icon: FileText },
-              { name: 'Online Chat Desk', path: '/chat', icon: MessageSquare }
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
+              { name: 'Report Issue', path: '/complaints/new', icon: PlusCircle },
+              { name: 'My Complaints', path: '/complaints/my', icon: FileText },
+              { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
           },
           {
             section: 'Teaching & Students',
             links: [
-              { name: 'Upload Study Resources', path: '/resources', icon: BookOpen },
-              { name: 'College Notices', path: '/notices', icon: Bell },
-              { name: 'Placements & Internships', path: '/placements', icon: Briefcase },
-              { name: 'Faculty Directory', path: '/faculty-directory', icon: Users }
+              { name: 'Study Resources & Notes', path: '/resources', icon: BookOpen },
+              { name: 'Notice Board', path: '/notices', icon: Bell },
+              { name: 'Lost & Found Hub', path: '/lost-found', icon: Search }
             ]
           },
           {
-            section: 'Support',
+            section: 'Account & Safety',
             links: [
-              { name: 'Emergency Helpline', path: '/emergency', icon: AlertTriangle },
-              { name: 'Faculty Profile', path: '/profile', icon: User }
+              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle },
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -164,21 +165,27 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
       case 'staff':
         return [
           {
-            section: 'Technician Desk',
+            section: 'Operations & Tasks',
             links: [
-              { name: 'Staff Task Desk', path: '/staff', icon: LayoutDashboard },
+              { name: 'Staff Operations Desk', path: '/staff', icon: LayoutDashboard },
+              { name: 'Manage Complaints', path: '/admin/complaints', icon: ClipboardList },
               { name: 'Predictive Fleet Health', path: '/predictive-maintenance', icon: Activity },
-              { name: 'Assigned Complaints', path: '/admin/complaints', icon: ClipboardList },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
-              { name: 'Online Chat Desk', path: '/chat', icon: MessageSquare }
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
+              { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
           },
           {
-            section: 'Campus Support',
+            section: 'Campus Facilities',
             links: [
-              { name: 'Campus Notices', path: '/notices', icon: Bell },
-              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle, highlight: true },
-              { name: 'Staff Profile', path: '/profile', icon: User }
+              { name: 'Notice Board', path: '/notices', icon: Bell },
+              { name: 'Lost & Found Hub', path: '/lost-found', icon: Search },
+              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle }
+            ]
+          },
+          {
+            section: 'Account & Safety',
+            links: [
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -187,33 +194,33 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
       default:
         return [
           {
-            section: 'Main Hub',
+            section: 'Student Community Hub',
             links: [
-              { name: 'Student Home', path: '/student', icon: Home },
-              { name: 'My Attendance & 75% Tracker', path: '/attendance', icon: CalendarCheck2 },
-              { name: '1-Tap QR Report', path: '/qr-report', icon: QrCode },
-              { name: 'Submit Complaint', path: '/complaints/new', icon: PlusCircle },
-              { name: 'My Complaints & Track', path: '/complaints/my', icon: FileText },
-              { name: 'Online Chat Desk', path: '/chat', icon: MessageSquare }
+              { name: 'Student Community Hub', path: '/student', icon: Home },
+              { name: 'Report Issue', path: '/complaint/new', icon: PlusCircle },
+              { name: 'My Complaints', path: '/complaints', icon: FileText },
+              { name: 'QR Scan', path: '/qr-report', icon: QrCode },
+              { name: 'Attendance', path: '/attendance', icon: CalendarCheck2 },
+              { name: 'Live Campus Chat', path: '/chat', icon: MessageSquare }
             ]
           },
           {
-            section: 'Campus Life & Academics',
+            section: 'Academic & Campus Hub',
             links: [
-              { name: 'Campus Notices', path: '/notices', icon: Bell },
-              { name: 'Study Notes & PYQs', path: '/resources', icon: BookOpen },
-              { name: 'Smart Study Room & Pods', path: '/study-room', icon: Headphones },
-              { name: 'Placements & Internships', path: '/placements', icon: Briefcase },
+              { name: 'Notice Board', path: '/notices', icon: Bell },
+              { name: 'Study Resources & Notes', path: '/resources', icon: BookOpen },
+              { name: 'Study Pods', path: '/study-room', icon: Headphones },
+              { name: 'Placements & Drives', path: '/placements', icon: Briefcase },
               { name: 'Lost & Found Hub', path: '/lost-found', icon: Search },
-              { name: 'Faculty Directory', path: '/faculty-directory', icon: Users },
-              { name: 'Student Feedback', path: '/feedback', icon: MessageSquare }
+              { name: 'Faculty Directory', path: '/faculty-directory', icon: Users }
             ]
           },
           {
-            section: 'Safety & Profile',
+            section: 'Support & Profile',
             links: [
-              { name: 'Emergency Helpline', path: '/emergency', icon: AlertTriangle, highlight: true },
-              { name: 'My Profile & ID', path: '/profile', icon: User }
+              { name: 'Emergency Center', path: '/emergency', icon: AlertTriangle, highlight: true },
+              { name: 'Campus Feedback & Suggestions', path: '/feedback', icon: MessageSquare },
+              { name: 'Profile', path: '/profile', icon: User }
             ]
           }
         ];
@@ -223,17 +230,17 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
   const navSections = getNavSections();
 
   const roleThemeBadge = {
-    student: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-    faculty: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    hod: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-    staff: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-    teammember: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40 font-extrabold',
-    admin: 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-extrabold'
+    student: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30',
+    faculty: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+    hod: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
+    staff: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30',
+    teammember: 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 border-indigo-500/40 font-black',
+    admin: 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border-rose-500/40 font-black'
   };
 
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Backdrop for Mobile */}
       {isOpen && (
         <div
           onClick={onClose}
@@ -276,7 +283,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                 title="Hide Sidebar"
               >
                 <PanelLeftClose className="w-4 h-4" />
@@ -301,7 +308,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
             className="px-2.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-[11px] font-extrabold flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
           >
             <AlertTriangle className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-            <span>SOS Help</span>
+            <span>{t('SOS')}</span>
           </button>
 
           <button
@@ -311,7 +318,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
             className="px-2.5 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-[11px] font-extrabold flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-95"
           >
             <Bot className="w-3.5 h-3.5 text-purple-500" />
-            <span>AI Copilot</span>
+            <span>{t('AI Copilot')}</span>
           </button>
         </div>
 
@@ -320,7 +327,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
           {navSections.map((sec, secIdx) => (
             <div key={secIdx} className="space-y-1">
               <span className="px-3 text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
-                {sec.section}
+                {t(sec.section)}
               </span>
 
               {sec.links.map(link => {
@@ -341,7 +348,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
                     }
                   >
                     <Icon className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="truncate">{link.name}</span>
+                    <span className="truncate">{t(link.name)}</span>
                   </NavLink>
                 );
               })}
@@ -359,7 +366,7 @@ const Sidebar = ({ isOpen, onClose, onOpenSOS, onOpenAI }) => {
           <button
             type="button"
             onClick={onClose}
-            className="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition"
+            className="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
             title="Hide Sidebar"
           >
             Hide ⇥

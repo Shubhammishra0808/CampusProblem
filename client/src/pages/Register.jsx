@@ -138,14 +138,14 @@ const Register = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">College Email</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
               <input
                 type="email"
                 name="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="student@campusfix.edu"
+                placeholder="e.g. yourname@example.com"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-brand-500 outline-none"
               />
             </div>

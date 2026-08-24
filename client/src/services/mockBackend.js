@@ -980,6 +980,255 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     return { data: { success: true, message: 'Feedback submitted successfully! Thank you for rating campus facilities.' } };
   }
 
+  // --- 12. FULL ATTENDANCE SYSTEM ENGINE (STUDENT, FACULTY, HOD, ADMIN) ---
+  const mockSubjects = [
+    { _id: 'sub_cs501', code: 'CS501', name: 'Operating Systems & System Architecture', department: 'Computer Science & Engineering', semester: 5, credits: 4, faculty: { _id: 'user_fac_003', name: 'Dr. Suresh Kumar', email: 'faculty@campusfix.edu' }, totalPlannedClasses: 45, attendedClasses: 38, conductedClasses: 42 },
+    { _id: 'sub_cs502', code: 'CS502', name: 'Database Management Systems & SQL Analytics', department: 'Computer Science & Engineering', semester: 5, credits: 4, faculty: { _id: 'user_hod_002', name: 'Prof. Anjali Verma', email: 'hod@campusfix.edu' }, totalPlannedClasses: 45, attendedClasses: 35, conductedClasses: 40 },
+    { _id: 'sub_cs503', code: 'CS503', name: 'Computer Networks & Security Protocols', department: 'Computer Science & Engineering', semester: 5, credits: 3, faculty: { _id: 'user_fac_003', name: 'Dr. Suresh Kumar', email: 'faculty@campusfix.edu' }, totalPlannedClasses: 40, attendedClasses: 28, conductedClasses: 34 },
+    { _id: 'sub_cs504', code: 'CS504', name: 'Artificial Intelligence & Machine Learning', department: 'Computer Science & Engineering', semester: 5, credits: 4, faculty: { _id: 'user_hod_002', name: 'Prof. Anjali Verma', email: 'hod@campusfix.edu' }, totalPlannedClasses: 45, attendedClasses: 39, conductedClasses: 44 },
+    { _id: 'sub_cs505', code: 'CS505', name: 'Cloud Computing, DevOps & Microservices', department: 'Computer Science & Engineering', semester: 5, credits: 3, faculty: { _id: 'user_fac_003', name: 'Dr. Suresh Kumar', email: 'faculty@campusfix.edu' }, totalPlannedClasses: 36, attendedClasses: 31, conductedClasses: 35 }
+  ];
+
+  if (cleanUrl.startsWith('/attendance/policy')) {
+    if (method === 'PUT') {
+      return { data: { success: true, message: 'Policy updated successfully', policy: { ...data, minAttendancePercent: data.minAttendancePercent || 75 } } };
+    }
+    return {
+      data: {
+        success: true,
+        policy: {
+          institutionName: 'CampusFix Engineering University',
+          minAttendancePercent: 75,
+          warningThresholdPercent: 80,
+          criticalThresholdPercent: 75,
+          lockDurationHours: 24,
+          qrSessionDurationMinutes: 5,
+          locationVerificationEnabled: false,
+          calculationRules: { presentWeight: 1, lateWeight: 0.5, onDutyCountsAsPresent: true, excusedExcludedFromTotal: true }
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/subjects')) {
+    if (method === 'POST') {
+      const newSub = {
+        _id: `sub_${Date.now()}`,
+        code: data.code || 'CS599',
+        name: data.name || 'Special Elective',
+        department: data.department || 'Computer Science & Engineering',
+        semester: Number(data.semester) || 5,
+        credits: Number(data.credits) || 3,
+        faculty: users.find(u => u._id === data.facultyId) || users[2],
+        totalPlannedClasses: Number(data.totalPlannedClasses) || 40,
+        conductedClasses: 0,
+        attendedClasses: 0
+      };
+      return { data: { success: true, message: 'Subject created successfully', subject: newSub } };
+    }
+    return { data: { success: true, subjects: mockSubjects } };
+  }
+
+  if (cleanUrl.startsWith('/attendance/student-summary')) {
+    const totalConducted = mockSubjects.reduce((sum, s) => sum + s.conductedClasses, 0);
+    const totalAttended = mockSubjects.reduce((sum, s) => sum + s.attendedClasses, 0);
+    const overallPercentage = Number(((totalAttended / totalConducted) * 100).toFixed(1));
+
+    const subjectBreakdown = mockSubjects.map(s => {
+      const pct = Number(((s.attendedClasses / s.conductedClasses) * 100).toFixed(1));
+      const required75 = Math.ceil(0.75 * s.conductedClasses);
+      const safeBunks = Math.max(0, Math.floor((s.attendedClasses - 0.75 * s.conductedClasses) / 0.75));
+      const neededClasses = pct < 75 ? Math.ceil((0.75 * s.conductedClasses - s.attendedClasses) / 0.25) : 0;
+      
+      let status = 'Safe Zone';
+      if (pct < 75) status = 'Critical Shortage';
+      else if (pct < 80) status = 'Warning Zone';
+
+      return {
+        subjectId: s._id,
+        code: s.code,
+        name: s.name,
+        facultyName: s.faculty?.name || 'Assigned Faculty',
+        credits: s.credits,
+        conducted: s.conductedClasses,
+        attended: s.attendedClasses,
+        missed: s.conductedClasses - s.attendedClasses,
+        percentage: pct,
+        status,
+        safeBunks,
+        neededClasses
+      };
+    });
+
+    return {
+      data: {
+        success: true,
+        summary: {
+          studentName: 'Aarav Patel',
+          rollNumber: '22CS045',
+          department: 'Computer Science & Engineering',
+          semester: 5,
+          overallPercentage,
+          totalConducted,
+          totalAttended,
+          totalMissed: totalConducted - totalAttended,
+          status: overallPercentage >= 75 ? 'Safe Zone' : 'Critical Shortage',
+          safeBunksAvailable: 8,
+          subjectBreakdown,
+          recentActivity: [
+            { id: 'rec_1', date: new Date().toISOString(), subjectCode: 'CS501', subjectName: 'Operating Systems', status: 'Present', slot: '09:00 AM - 10:00 AM', room: 'Room C-201' },
+            { id: 'rec_2', date: new Date(Date.now() - 86400000).toISOString(), subjectCode: 'CS502', subjectName: 'Database Management Systems', status: 'Present', slot: '10:00 AM - 11:00 AM', room: 'Room C-201' },
+            { id: 'rec_3', date: new Date(Date.now() - 86400000 * 2).toISOString(), subjectCode: 'CS504', subjectName: 'Artificial Intelligence', status: 'Present', slot: '11:15 AM - 12:15 PM', room: 'Lab 3' },
+            { id: 'rec_4', date: new Date(Date.now() - 86400000 * 3).toISOString(), subjectCode: 'CS503', subjectName: 'Computer Networks', status: 'Absent', slot: '02:00 PM - 03:00 PM', room: 'Room C-204' }
+          ]
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/faculty/schedule')) {
+    return {
+      data: {
+        success: true,
+        schedule: [
+          { id: 'slot-1', lectureSlot: '09:00 AM - 10:00 AM', roomNumber: 'Room C-201', section: 'A', subject: mockSubjects[0], marked: true, totalStudents: 60, presentCount: 54 },
+          { id: 'slot-2', lectureSlot: '10:00 AM - 11:00 AM', roomNumber: 'Room C-201', section: 'A', subject: mockSubjects[1], marked: false, totalStudents: 60, presentCount: 0 },
+          { id: 'slot-3', lectureSlot: '11:15 AM - 12:15 PM', roomNumber: 'Lab 3 (AI Studio)', section: 'B', subject: mockSubjects[3], marked: false, totalStudents: 58, presentCount: 0 },
+          { id: 'slot-4', lectureSlot: '02:00 PM - 03:00 PM', roomNumber: 'Room C-204', section: 'B', subject: mockSubjects[4], marked: false, totalStudents: 55, presentCount: 0 }
+        ]
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/class-students')) {
+    const sampleRoster = [
+      { _id: 'stu_1', name: 'Aarav Patel', rollNumber: '22CS045', email: 'student@campusfix.edu', attendancePct: 88.5, status: 'Present' },
+      { _id: 'stu_2', name: 'Ananya Sharma', rollNumber: '22CS046', email: 'ananya@campusfix.edu', attendancePct: 94.2, status: 'Present' },
+      { _id: 'stu_3', name: 'Bhavin Shah', rollNumber: '22CS047', email: 'bhavin@campusfix.edu', attendancePct: 71.4, status: 'Absent' },
+      { _id: 'stu_4', name: 'Chetan Joshi', rollNumber: '22CS048', email: 'chetan@campusfix.edu', attendancePct: 78.0, status: 'Present' },
+      { _id: 'stu_5', name: 'Deepika Iyer', rollNumber: '22CS049', email: 'deepika@campusfix.edu', attendancePct: 91.0, status: 'Present' },
+      { _id: 'stu_6', name: 'Farhan Ali', rollNumber: '22CS050', email: 'farhan@campusfix.edu', attendancePct: 68.5, status: 'Absent' }
+    ];
+    return { data: { success: true, students: sampleRoster } };
+  }
+
+  if (cleanUrl.startsWith('/attendance/mark')) {
+    return {
+      data: {
+        success: true,
+        message: 'Attendance for 60 students saved and verified with immutable tamper-resistant audit hash.',
+        markedCount: 60,
+        sessionId: `sess_${Date.now()}`
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/qr/start')) {
+    const token = `QR-${Math.random().toString(36).substring(2, 9).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    return {
+      data: {
+        success: true,
+        sessionId: `qrsess_${Date.now()}`,
+        qrToken: token,
+        qrPayload: `campusfix://attendance/verify?token=${token}&ts=${Date.now()}`,
+        durationMinutes: data?.durationMinutes || 5,
+        expiresAt: new Date(Date.now() + (data?.durationMinutes || 5) * 60000).toISOString()
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/qr/verify')) {
+    return {
+      data: {
+        success: true,
+        message: 'Attendance Verified! Geofence within 50m radius verified. Your status is now marked Present.',
+        verificationTime: new Date().toISOString(),
+        subjectName: 'Operating Systems (CS501)',
+        updatedPercentage: '84.2%'
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/qr/end')) {
+    return { data: { success: true, message: 'QR Attendance Session concluded. All submitted tokens locked.' } };
+  }
+
+  if (cleanUrl.startsWith('/attendance/analytics')) {
+    return {
+      data: {
+        success: true,
+        analytics: {
+          department: 'Computer Science & Engineering',
+          totalStudents: 240,
+          avgDepartmentAttendance: 82.4,
+          safeZoneCount: 198,
+          warningZoneCount: 28,
+          criticalDefaulterCount: 14,
+          attendanceDistribution: [
+            { range: '90-100%', count: 110, percentage: 45.8 },
+            { range: '80-89%', count: 88, percentage: 36.6 },
+            { range: '75-79%', count: 28, percentage: 11.7 },
+            { range: '<75% (Defaulter)', count: 14, percentage: 5.8 }
+          ],
+          subjectAverages: [
+            { subject: 'CS501 OS', avg: 85.2 },
+            { subject: 'CS502 DBMS', avg: 82.1 },
+            { subject: 'CS503 Networks', avg: 77.4 },
+            { subject: 'CS504 AI/ML', avg: 88.6 },
+            { subject: 'CS505 Cloud', avg: 81.3 }
+          ],
+          defaulters: [
+            { rollNumber: '22CS047', name: 'Bhavin Shah', attendance: 71.4, shortfallClasses: 4, parentPhone: '9876543210' },
+            { rollNumber: '22CS050', name: 'Farhan Ali', attendance: 68.5, shortfallClasses: 6, parentPhone: '9876543211' },
+            { rollNumber: '22CS012', name: 'Divya Rawat', attendance: 73.1, shortfallClasses: 2, parentPhone: '9876543212' }
+          ]
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/history') || cleanUrl.startsWith('/attendance/calendar')) {
+    const historyList = [
+      { _id: 'h_1', date: new Date().toISOString(), subject: mockSubjects[0], status: 'Present', markedBy: 'Dr. Suresh Kumar', verificationMethod: 'QR Scan' },
+      { _id: 'h_2', date: new Date(Date.now() - 86400000).toISOString(), subject: mockSubjects[1], status: 'Present', markedBy: 'Prof. Anjali Verma', verificationMethod: 'Manual Roster' },
+      { _id: 'h_3', date: new Date(Date.now() - 86400000 * 2).toISOString(), subject: mockSubjects[3], status: 'Present', markedBy: 'Prof. Anjali Verma', verificationMethod: 'QR Scan' },
+      { _id: 'h_4', date: new Date(Date.now() - 86400000 * 3).toISOString(), subject: mockSubjects[2], status: 'Absent', markedBy: 'Dr. Suresh Kumar', verificationMethod: 'Manual Roster' },
+      { _id: 'h_5', date: new Date(Date.now() - 86400000 * 4).toISOString(), subject: mockSubjects[4], status: 'Present', markedBy: 'Dr. Suresh Kumar', verificationMethod: 'QR Scan' }
+    ];
+    return { data: { success: true, history: historyList, records: historyList } };
+  }
+
+  if (cleanUrl.startsWith('/attendance/reports')) {
+    return {
+      data: {
+        success: true,
+        report: {
+          generatedAt: new Date().toISOString(),
+          department: 'Computer Science & Engineering',
+          semester: 5,
+          totalStudents: 240,
+          classesConducted: 195,
+          overallAverage: 82.4,
+          downloadUrl: '#',
+          fileName: 'CSE_Sem5_Official_Attendance_Report_2026.pdf'
+        }
+      }
+    };
+  }
+
+  if (cleanUrl.startsWith('/attendance/audit-logs')) {
+    return {
+      data: {
+        success: true,
+        logs: [
+          { id: 'log_1', action: 'ATTENDANCE_MARKED', subject: 'CS501', performedByName: 'Dr. Suresh Kumar', role: 'faculty', timestamp: new Date().toISOString(), details: 'Marked 60 students via Web Terminal' },
+          { id: 'log_2', action: 'QR_SESSION_COMPLETED', subject: 'CS504', performedByName: 'Prof. Anjali Verma', role: 'hod', timestamp: new Date(Date.now() - 86400000).toISOString(), details: 'Dynamic QR check-in verified 58 students' },
+          { id: 'log_3', action: 'RECORD_EDITED', subject: 'CS503', performedByName: 'Prof. Anjali Verma', role: 'hod', timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), details: 'Approved Medical Certificate for student 22CS045 (Absent -> Excused)' }
+        ]
+      }
+    };
+  }
+
   // Default fallback response
   return {
     data: {

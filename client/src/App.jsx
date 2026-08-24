@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
@@ -40,9 +41,10 @@ import TeamMemberDashboard from './pages/TeamMemberDashboard';
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <Routes>
+      <LanguageProvider>
+        <AuthProvider>
+          <Router>
+            <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -115,6 +117,7 @@ function App() {
           </Routes>
         </Router>
       </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

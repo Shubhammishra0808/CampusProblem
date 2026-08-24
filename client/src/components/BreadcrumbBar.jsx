@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   ArrowLeft,
   Home,
@@ -10,46 +11,47 @@ import {
 } from 'lucide-react';
 
 const routeTitles = {
-  '/student': 'Student Dashboard',
-  '/admin': 'Admin Command Center',
-  '/admin/complaints': 'Complaints Management',
+  '/student': 'Student Community Hub',
+  '/admin': 'Admin Overview',
+  '/admin/complaints': 'Manage Complaints',
   '/admin/users': 'User Management',
-  '/faculty': 'Faculty & Academic Portal',
-  '/hod': 'HOD Department Desk',
+  '/faculty': 'Faculty Directory',
+  '/hod': 'Faculty Directory',
   '/staff': 'Staff Operations Desk',
   '/team-dashboard': 'Team Member Command Hub',
-  '/attendance': 'Smart Attendance Hub',
-  '/attendance/my': 'My Attendance',
-  '/attendance/mark': 'Mark Attendance',
+  '/attendance': 'Smart Attendance Grid',
+  '/attendance/my': 'Attendance',
+  '/attendance/mark': 'Mark Class Attendance',
   '/attendance/history': 'Attendance History',
-  '/attendance/calendar': 'Attendance Calendar',
+  '/attendance/calendar': 'Attendance History',
   '/attendance/analytics': 'Attendance Analytics',
   '/attendance/reports': 'Attendance Reports',
   '/attendance/settings': 'Attendance Settings',
   '/chat': 'Live Campus Chat',
-  '/qr-report': '1-Tap QR Report',
+  '/qr-report': 'QR Scan',
   '/predictive-maintenance': 'Predictive Fleet Health',
-  '/maintenance': 'Equipment Maintenance',
-  '/complaint/new': 'New Grievance Report',
-  '/complaints/new': 'New Grievance Report',
+  '/maintenance': 'Predictive Fleet Health',
+  '/complaint/new': 'Report Issue',
+  '/complaints/new': 'Report Issue',
   '/complaints': 'My Complaints',
   '/complaints/my': 'My Complaints',
-  '/notices': 'Campus Notice Board',
-  '/resources': 'Study Resources Hub',
-  '/placements': 'Placement & Career Hub',
-  '/lost-found': 'Lost & Found Vault',
+  '/notices': 'Notice Board',
+  '/resources': 'Study Resources & Notes',
+  '/placements': 'Placements & Drives',
+  '/lost-found': 'Lost & Found Hub',
   '/feedback': 'Campus Feedback & Suggestions',
-  '/emergency': 'Emergency & Safety Center',
+  '/emergency': 'Emergency Center',
   '/faculty-directory': 'Faculty Directory',
-  '/study-room': 'Smart Study Room & Pods',
-  '/smart-study-room': 'Smart Study Room & Pods',
-  '/profile': 'My Profile & Digital ID'
+  '/study-room': 'Study Pods',
+  '/smart-study-room': 'Study Pods',
+  '/profile': 'Profile'
 };
 
 const BreadcrumbBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { t } = useLanguage();
 
   const currentPath = location.pathname;
 
@@ -83,7 +85,7 @@ const BreadcrumbBar = () => {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></div>
           <span className="text-slate-900 dark:text-white font-bold">
-            {routeTitles[currentPath] || 'Campus Command Portal'}
+            {t(routeTitles[currentPath]) || 'Campus Command Portal'}
           </span>
           <span className="text-slate-400 dark:text-slate-600 hidden sm:inline">• Active Session</span>
         </div>
@@ -110,7 +112,7 @@ const BreadcrumbBar = () => {
           title="Go back to previous page"
         >
           <ArrowLeft className="w-4 h-4 text-brand-600 dark:text-brand-400 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Back</span>
+          <span>{t('Back')}</span>
         </button>
 
         <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
@@ -129,7 +131,8 @@ const BreadcrumbBar = () => {
           {pathSegments.map((segment, idx) => {
             const pathUrl = `/${pathSegments.slice(0, idx + 1).join('/')}`;
             const isLast = idx === pathSegments.length - 1;
-            const segmentTitle = routeTitles[pathUrl] || segment.charAt(0).toUpperCase() + segment.slice(1).replace('-', ' ');
+            const rawTitle = routeTitles[pathUrl] || segment.charAt(0).toUpperCase() + segment.slice(1).replace('-', ' ');
+            const segmentTitle = t(rawTitle);
 
             return (
               <React.Fragment key={pathUrl}>
@@ -169,3 +172,4 @@ const BreadcrumbBar = () => {
 };
 
 export default BreadcrumbBar;
+

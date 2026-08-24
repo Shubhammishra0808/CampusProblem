@@ -2,6 +2,7 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
+import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import {
   ShieldAlert,
   Mail,
@@ -47,6 +48,7 @@ import {
   Radio,
   Share2,
   ChevronRight,
+  ChevronDown,
   Database,
   Server,
   LockKeyhole,
@@ -380,9 +382,9 @@ const Login = () => {
   const [loginMethod, setLoginMethod] = useState('password');
 
   // Password Login State
-  const [email, setEmail] = useState('shubhammishra23082004@gmail.com');
-  const [password, setPassword] = useState('Shubham@123');
-  const [role, setRole] = useState('admin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
   const [showPassword, setShowPassword] = useState(false);
 
   // OTP Form State
@@ -414,6 +416,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Global Language & Demo Sign-In Modal States
+  const { language, setLanguage, t, currentLanguage } = useLanguage();
+  const [showLangMenu, setShowLangMenu] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [demoModalRole, setDemoModalRole] = useState('student');
+  const langMenuRef = useRef(null);
 
   const otpInputRefs = useRef([]);
   const { login, sendOTP, loginWithOTP, register } = useContext(AuthContext);
@@ -576,44 +585,6 @@ const Login = () => {
     }
   };
 
-  // 1-Click Direct Demo Sign-in Handler
-  const handleInstantDemoLogin = async (targetRole) => {
-    setError('');
-    setSuccessMsg('');
-    setLoading(true);
-    try {
-      let demoEmail = 'shubhammishra23082004@gmail.com';
-      let demoPass = 'Shubham@123';
-      if (targetRole === 'student') {
-        demoEmail = 'student@campusfix.edu';
-        demoPass = 'password123';
-      } else if (targetRole === 'faculty') {
-        demoEmail = 'faculty@campusfix.edu';
-        demoPass = 'password123';
-      } else if (targetRole === 'hod') {
-        demoEmail = 'hod@campusfix.edu';
-        demoPass = 'password123';
-      } else if (targetRole === 'staff') {
-        demoEmail = 'staff@campusfix.edu';
-        demoPass = 'password123';
-      } else if (targetRole === 'teammember') {
-        demoEmail = 'team@campusfix.edu';
-        demoPass = 'password123';
-      }
-      setEmail(demoEmail);
-      setPassword(demoPass);
-      setRole(targetRole);
-
-      const data = await login(demoEmail, demoPass);
-      handleRoleRedirect(data.user.role);
-    } catch (err) {
-      console.error(err);
-      setError('Instant demo sign-in failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Send OTP Handler
   const handleSendOTP = async (e) => {
     if (e) e.preventDefault();
@@ -753,24 +724,24 @@ const Login = () => {
       <div className="absolute bottom-10 left-10 w-80 h-80 bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
       {/* ================= TOP NAVBAR WITH SUNDAR DIGITAL CLOCK ================= */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-[#070b14]/85 backdrop-blur-xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between transition-all duration-300 shadow-xs">
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#070b14]/90 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between transition-all duration-300 shadow-xs">
         
         {/* Brand Identity */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 transform hover:scale-105 hover:rotate-3 transition-transform duration-300">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 transform hover:scale-105 hover:rotate-3 transition-transform duration-300 flex-shrink-0">
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl font-black tracking-tight bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 dark:from-brand-400 dark:via-indigo-300 dark:to-purple-300 bg-clip-text text-transparent">
-                CampusFix
+                {t('CampusFix')}
               </span>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-500/10 dark:bg-brand-500/20 text-brand-600 dark:text-brand-300 border border-brand-500/20 dark:border-brand-500/30">
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-600 dark:text-brand-300 border border-brand-500/30">
                 by Team Shubham
               </span>
             </div>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">
-              Smart AI Campus Problem Solving &amp; Facility Automation
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold hidden sm:inline leading-tight">
+              {t('Smart Problem Solving by Team Shubham')}
             </span>
           </div>
         </div>
@@ -779,36 +750,68 @@ const Login = () => {
         <div className="flex items-center gap-2 sm:gap-3">
           
           {/* Navigation Links (Desktop) */}
-          <nav className="hidden xl:flex items-center gap-1 mr-2 bg-slate-100/70 dark:bg-slate-900/70 p-1 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-xs font-bold text-slate-600 dark:text-slate-300">
+          <nav className="hidden xl:flex items-center gap-1 mr-2 bg-slate-100/80 dark:bg-slate-900/80 p-1 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 text-xs font-bold text-slate-600 dark:text-slate-300 backdrop-blur-md">
             <a href="#demo" className="px-3 py-1.5 rounded-xl bg-brand-500/15 text-brand-600 dark:text-brand-300 hover:bg-brand-600 hover:text-white border border-brand-500/30 transition-all duration-200 flex items-center gap-1 font-black shadow-xs">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              <span>Live Demo</span>
+              <span>{t('Live Demo')}</span>
             </a>
-            <a href="#campus-gis-map" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">GIS Campus Map</a>
-            <a href="#smart-whiteboard" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Smart Board</a>
-            <a href="#smart-study-hub" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Study Pods</a>
-            <a href="#system-powers" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Features</a>
-            <a href="#roles" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">Roles</a>
+            <a href="#campus-gis-map" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">{t('GIS Campus Map')}</a>
+            <a href="#smart-whiteboard" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">{t('Smart Board')}</a>
+            <a href="#smart-study-hub" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">{t('Study Pods')}</a>
+            <a href="#system-powers" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">{t('Features')}</a>
+            <a href="#roles" className="px-3 py-1.5 rounded-xl hover:text-brand-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all duration-200">{t('Roles')}</a>
           </nav>
 
-          {/* Multilingual Selector */}
-          <div className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">
-            <Globe className="w-3.5 h-3.5 text-brand-500" />
-            <select
-              value={selectedLang}
-              onChange={e => setSelectedLang(e.target.value)}
-              className="bg-transparent text-xs font-bold outline-none cursor-pointer border-none p-0 text-slate-800 dark:text-slate-200"
+          {/* ================= UNIVERSAL LANGUAGE SELECTOR DROPDOWN ================= */}
+          <div className="relative" ref={langMenuRef}>
+            <button
+              type="button"
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/90 dark:hover:bg-slate-700/90 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+              title="Change Portal Language (भाषा बदलें)"
             >
-              <option value="en">English</option>
-              <option value="hi">हिन्दी</option>
-              <option value="hinglish">Hinglish</option>
-              <option value="mr">मराठी</option>
-              <option value="ta">தமிழ்</option>
-            </select>
+              <Globe className="w-3.5 h-3.5 text-brand-500 flex-shrink-0 animate-pulse" />
+              <span className="text-xs">{currentLanguage?.flag}</span>
+              <span className="hidden sm:inline text-xs font-extrabold">{currentLanguage?.native || 'English'}</span>
+              <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
+            </button>
+
+            {showLangMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#0f172a] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 py-1.5 z-50 overflow-hidden animate-scale-in">
+                <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  Select Language / भाषा
+                </div>
+                <div className="max-h-64 overflow-y-auto py-1">
+                  {LANGUAGES.map(l => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      onClick={() => {
+                        setLanguage(l.code);
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full px-3 py-2 text-left text-xs font-bold flex items-center justify-between transition hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer ${
+                        language === l.code
+                          ? 'bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-300 font-black'
+                          : 'text-slate-700 dark:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{l.flag}</span>
+                        <span>{l.label}</span>
+                      </div>
+                      {language === l.code && (
+                        <Check className="w-3.5 h-3.5 text-brand-500" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sundar Glowing Digital Clock HUD Widget */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm text-xs font-bold text-slate-800 dark:text-slate-200 backdrop-blur-md transform hover:scale-102 transition-transform duration-200">
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm text-xs font-bold text-slate-800 dark:text-slate-200 backdrop-blur-md">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
             <div className="flex items-center gap-1 font-mono font-black text-slate-900 dark:text-white text-xs tracking-wider">
               <span>{displayHours}</span>
@@ -820,11 +823,23 @@ const Login = () => {
                 {ampm}
               </span>
             </div>
-            <span className="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 hidden md:inline font-semibold">
+            <span className="text-slate-300 dark:text-slate-700 hidden lg:inline">|</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 hidden lg:inline font-semibold">
               {dateString}
             </span>
           </div>
+
+          {/* Fast Scroll to Sign In Button */}
+          <button
+            type="button"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-black text-xs shadow-md shadow-brand-500/25 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>{t('Sign In')}</span>
+          </button>
 
           {/* Theme Toggle Button */}
           <button
@@ -851,12 +866,12 @@ const Login = () => {
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
         <div className="xl:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-2 text-xs font-bold animate-fadeIn">
-          <a href="#campus-gis-map" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🗺️ Live GIS Campus Map</a>
-          <a href="#smart-whiteboard" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🎨 Smart Board Studio</a>
-          <a href="#smart-study-hub" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🎧 Smart Study Pods</a>
-          <a href="#system-powers" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">⚡ Platform Core Power</a>
-          <a href="#system-workflow" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🔄 5-Step Pipeline</a>
-          <a href="#roles" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">👥 Roles &amp; Access</a>
+          <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">⚡ {t('Live Demo')}</a>
+          <a href="#campus-gis-map" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🗺️ {t('GIS Campus Map')}</a>
+          <a href="#smart-whiteboard" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🎨 {t('Smart Board')}</a>
+          <a href="#smart-study-hub" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">🎧 {t('Study Pods')}</a>
+          <a href="#system-powers" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">⚡ {t('Features')}</a>
+          <a href="#roles" onClick={() => setMobileMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">👥 {t('Roles')}</a>
         </div>
       )}
 
@@ -1082,17 +1097,12 @@ const Login = () => {
                     </button>
                   </div>
 
-                    {/* Role Selector with Auto-Fill */}
+                    {/* Role Selector */}
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                          Select Target Role (Click to Auto-Fill)
-                        </label>
-                        <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400">
-                          ⚡ 1-Click Demo Ready
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        Select Portal Role
+                      </label>
+                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
                         {roles.map(r => {
                           const Icon = r.icon;
                           const isSelected = role === r.id;
@@ -1103,25 +1113,6 @@ const Login = () => {
                               onClick={() => {
                                 setRole(r.id);
                                 setError('');
-                                if (r.id === 'admin') {
-                                  setEmail('shubhammishra23082004@gmail.com');
-                                  setPassword('Shubham@123');
-                                } else if (r.id === 'student') {
-                                  setEmail('student@campusfix.edu');
-                                  setPassword('password123');
-                                } else if (r.id === 'faculty') {
-                                  setEmail('faculty@campusfix.edu');
-                                  setPassword('password123');
-                                } else if (r.id === 'hod') {
-                                  setEmail('hod@campusfix.edu');
-                                  setPassword('password123');
-                                } else if (r.id === 'staff') {
-                                  setEmail('staff@campusfix.edu');
-                                  setPassword('password123');
-                                } else if (r.id === 'teammember') {
-                                  setEmail('team@campusfix.edu');
-                                  setPassword('password123');
-                                }
                               }}
                               className={`p-2 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center cursor-pointer transform active:scale-95 ${
                                 isSelected
@@ -1130,45 +1121,19 @@ const Login = () => {
                               }`}
                             >
                               <Icon className={`w-4 h-4 mb-0.5 ${isSelected ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 dark:text-slate-500'}`} />
-                              <span className="text-[9px] truncate w-full font-bold">{r.name}</span>
+                              <span className="text-[10px] truncate w-full font-bold">{r.name}</span>
                             </button>
                           );
                         })}
                       </div>
                     </div>
 
-                    {/* Quick Demo Fill Pill */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-brand-50/70 dark:bg-brand-950/40 border border-brand-200/80 dark:border-brand-800/60 text-xs">
-                      <div className="flex items-center gap-1.5 text-brand-900 dark:text-brand-200 text-[11px] font-semibold">
-                        <Sparkles className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 animate-pulse flex-shrink-0" />
-                        <span>Quick Demo Account:</span>
-                        <span className="font-bold text-brand-700 dark:text-brand-300 underline underline-offset-2">
-                          {role === 'admin' ? '👑 Dean Shubham Mishra' : role.toUpperCase()}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (role === 'admin') {
-                            setEmail('shubhammishra23082004@gmail.com');
-                            setPassword('Shubham@123');
-                          } else {
-                            setEmail(`${role === 'teammember' ? 'team' : role}@campusfix.edu`);
-                            setPassword('password123');
-                          }
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[10px] font-black shadow-xs transition-all cursor-pointer transform active:scale-95"
-                      >
-                        Fill Credentials
-                      </button>
-                    </div>
-
                     {/* Password Form */}
                     {loginMethod === 'password' && (
-                      <form onSubmit={handlePasswordSubmit} className="space-y-3.5">
+                      <form onSubmit={handlePasswordSubmit} className="space-y-3.5 pt-1">
                         <div>
                           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                            College Email Address
+                            Email Address
                           </label>
                           <div className="relative">
                             <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -1177,16 +1142,18 @@ const Login = () => {
                               required
                               value={email}
                               onChange={e => setEmail(e.target.value)}
-                              placeholder="e.g. student@campusfix.edu"
+                              placeholder="e.g. yourname@example.com"
                               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                            Password
-                          </label>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                              Password
+                            </label>
+                          </div>
                           <div className="relative">
                             <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                             <input
@@ -1210,75 +1177,19 @@ const Login = () => {
                         <button
                           type="submit"
                           disabled={loading}
-                          className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-black text-xs shadow-lg shadow-brand-500/25 transition-all duration-200 transform hover:-translate-y-0.5 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                          className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-black text-xs shadow-lg shadow-brand-500/25 transition-all duration-200 transform hover:-translate-y-0.5 active:scale-98 flex items-center justify-center gap-2 cursor-pointer mt-1"
                         >
                           {loading ? (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           ) : (
                             <>
-                              <span>Enter as {roles.find(r => r.id === role)?.name}</span>
+                              <span>Sign In as {roles.find(r => r.id === role)?.name}</span>
                               <ArrowRight className="w-4 h-4" />
                             </>
                           )}
                         </button>
                       </form>
                     )}
-
-                    {/* ⚡ 1-Click Direct Demo Launch Bar */}
-                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                          ⚡ 1-Click Direct Demo Sign-in
-                        </span>
-                        <a href="#roles" className="text-[10px] font-bold text-brand-600 dark:text-brand-400 hover:underline">
-                          All Portals ↓
-                        </a>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('admin')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          👑 Admin (Shubham)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('student')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          🎓 Student Demo
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('faculty')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          👨‍🏫 Faculty Demo
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('hod')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          🏛️ HOD Demo
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('staff')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          🔧 Staff Demo
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInstantDemoLogin('teammember')}
-                          className="p-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-black text-[10px] shadow-sm flex items-center justify-center gap-1 transition cursor-pointer transform active:scale-95"
-                        >
-                          ⚡ Team Lead
-                        </button>
-                      </div>
-                    </div>
 
                   {/* OTP Form */}
                   {loginMethod === 'otp' && (
@@ -1388,14 +1299,14 @@ const Login = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">College Email *</label>
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
                       <input
                         type="email"
                         name="email"
                         required
                         value={regForm.email}
                         onChange={handleRegChange}
-                        placeholder="name@campusfix.edu"
+                        placeholder="name@example.com"
                         className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
                       />
                     </div>
@@ -1508,15 +1419,17 @@ const Login = () => {
                 </p>
               </div>
 
-              {/* 1-Click Full Dashboard Launch Button */}
+              {/* Sign In to Full Portal Button */}
               <button
                 type="button"
-                onClick={() => handleInstantDemoLogin(embeddedDemoRole)}
-                disabled={loading}
+                onClick={() => {
+                  setDemoModalRole(embeddedDemoRole);
+                  setShowDemoModal(true);
+                }}
                 className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-700 hover:to-purple-700 text-white font-black text-xs shadow-lg shadow-brand-500/25 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer flex-shrink-0"
               >
                 <LogIn className="w-4 h-4" />
-                <span>Launch Full Screen {roles.find(r => r.id === embeddedDemoRole)?.name} App</span>
+                <span>Sign In to Access {roles.find(r => r.id === embeddedDemoRole)?.name} Portal</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -1568,11 +1481,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="w-5 h-5 text-amber-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        👑 Dean Shubham Mishra — Campus Command &amp; Operations
+                        👑 Dean Workspace — Campus Command &amp; Operations Overview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">shubhammishra23082004@gmail.com</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">Shubham@123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                      🔒 Limited Preview Mode (Sample Data)
                     </span>
                   </div>
 
@@ -1604,7 +1517,7 @@ const Login = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider text-[11px]">
-                        Live Incident Dispatch Stream
+                        Sample Incident Stream (Preview)
                       </span>
                       <button
                         type="button"
@@ -1657,6 +1570,9 @@ const Login = () => {
                         </div>
                       ))}
                     </div>
+                    <p className="text-[10px] text-slate-400 pt-1">
+                      ℹ️ Note: Live administrative logs and user rosters require authenticated Administrator login.
+                    </p>
                   </div>
                 </div>
               )}
@@ -1668,11 +1584,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <GraduationCap className="w-5 h-5 text-blue-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        🎓 Student Portal — Aarav Patel (22CS045)
+                        🎓 Student Portal — Student Workspace Preview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">student@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30">
+                      🔒 Student Preview Mode
                     </span>
                   </div>
 
@@ -1741,11 +1657,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <Users className="w-5 h-5 text-emerald-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        👨‍🏫 Faculty Suite — Dr. Suresh Kumar (CSE Dept)
+                        👨‍🏫 Faculty Suite — Classroom &amp; Course Overview Preview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">faculty@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                      🔒 Faculty Preview Mode
                     </span>
                   </div>
 
@@ -1793,11 +1709,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <User className="w-5 h-5 text-rose-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        🏛️ HOD Academic Suite — Prof. Anjali Verma (Computer Science)
+                        🏛️ HOD Academic Suite — Department Summary Preview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">hod@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30">
+                      🔒 HOD Preview Mode
                     </span>
                   </div>
 
@@ -1828,11 +1744,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <BriefcaseBusiness className="w-5 h-5 text-purple-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        🔧 Field Technician Desk — Ramesh Electrician (Senior Staff)
+                        🔧 Field Technician Desk — Maintenance Work-Order Preview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">staff@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30">
+                      🔒 Staff Preview Mode
                     </span>
                   </div>
 
@@ -1845,7 +1761,7 @@ const Login = () => {
                       </div>
                       <button
                         type="button"
-                        onClick={() => alert('Work Order marked as completed with digital proof!')}
+                        onClick={() => alert('Sample preview: Work Order status updated!')}
                         className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition cursor-pointer"
                       >
                         ✓ Mark Completed
@@ -1862,11 +1778,11 @@ const Login = () => {
                     <div className="flex items-center gap-2">
                       <Zap className="w-5 h-5 text-cyan-500" />
                       <span className="font-black text-slate-900 dark:text-white text-sm">
-                        ⚡ Core Committee Command — Rohan Sharma (Team Lead)
+                        ⚡ Core Committee Command — Broadcast &amp; Notice Preview
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                      Login: <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">team@campusfix.edu</code> | <code className="text-brand-600 dark:text-brand-400 font-mono font-bold">password123</code>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">
+                      🔒 Core Committee Preview
                     </span>
                   </div>
 
@@ -1877,10 +1793,14 @@ const Login = () => {
                     </p>
                     <button
                       type="button"
-                      onClick={() => handleInstantDemoLogin('teammember')}
+                      onClick={() => {
+                        setRole('teammember');
+                        setAuthMode('login');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
                       className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition cursor-pointer"
                     >
-                      Open Broadcast Dispatcher →
+                      Sign In to Access Broadcaster →
                     </button>
                   </div>
                 </div>
@@ -2558,27 +2478,23 @@ const Login = () => {
           </div>
         </section>
 
-        {/* ================= SECTION 4: ⚡ INTERACTIVE DEMO PORTALS & 1-CLICK SIGN-IN ================= */}
+        {/* ================= SECTION 4: 🏛️ CAMPUS WORKSPACES & ROLE PORTALS ================= */}
         <section id="roles" className="space-y-6 pt-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-[11px] font-black uppercase tracking-wider text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-3 py-1 rounded-full border border-brand-200 dark:border-brand-500/30">
-              ⚡ Live Demo Portals &amp; 1-Click Sign-In
+              🏛️ Role-Based Campus Portals
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-              Explore All 6 Campus Workspaces Instantly
+              Explore All 6 Campus Workspaces
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-              Click the <strong>"⚡ Launch Demo Dashboard"</strong> button on any role below to immediately enter that portal with pre-configured demo data!
+              Select your role portal to sign in and access customized problem solving tools, operational workflows, and verified logs.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {roles.map(r => {
               const Icon = r.icon;
-              const demoEmail = r.id === 'admin' 
-                ? 'shubhammishra23082004@gmail.com' 
-                : `${r.id === 'teammember' ? 'team' : r.id}@campusfix.edu`;
-              const demoPass = r.id === 'admin' ? 'Shubham@123' : 'password123';
               
               return (
                 <div
@@ -2598,8 +2514,8 @@ const Login = () => {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                        Live Demo
+                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        Protected Portal
                       </span>
                     </div>
 
@@ -2616,33 +2532,20 @@ const Login = () => {
                         </div>
                       ))}
                     </div>
-
-                    {/* Demo Credentials Box */}
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-1 text-[11px]">
-                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-                        <span>Email:</span>
-                        <code className="font-bold text-slate-900 dark:text-white text-[10px] bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded truncate max-w-[170px]">
-                          {demoEmail}
-                        </code>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-                        <span>Password:</span>
-                        <code className="font-bold text-slate-900 dark:text-white text-[10px] bg-slate-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">
-                          {demoPass}
-                        </code>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* 1-Click Launch Button */}
+                  {/* Sign In Button */}
                   <button
                     type="button"
-                    onClick={() => handleInstantDemoLogin(r.id)}
-                    disabled={loading}
+                    onClick={() => {
+                      setRole(r.id);
+                      setAuthMode('login');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     className={`w-full py-2.5 rounded-xl bg-gradient-to-r ${r.color} text-white font-black text-xs shadow-md shadow-brand-500/20 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer transform hover:scale-102 active:scale-98 mt-2`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                    <span>Launch {r.name} Demo Dashboard</span>
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In to {r.name} Portal</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -2742,6 +2645,104 @@ const Login = () => {
 
         </div>
       </footer>
+
+      {/* ================= GORGEOUS DEMO SIGN-IN REQUIRED MODAL POPUP ================= */}
+      {showDemoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fadeIn">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#0f172a] border border-slate-200/90 dark:border-slate-800/90 shadow-2xl p-6 sm:p-8 space-y-6 overflow-hidden animate-scale-in"
+          >
+            {/* Top Glowing Gradient Accent */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600"></div>
+
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Role Header Badge */}
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-brand-500/30 flex-shrink-0">
+                <ShieldCheck className="w-7 h-7" />
+              </div>
+              <div className="space-y-1 min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                    🔒 Demo Preview Mode
+                  </span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white truncate">
+                  Unlock Full {roles.find(r => r.id === demoModalRole)?.name || 'Portal'} Suite
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  This demo is a sample teaser. Sign in to access full live database &amp; operational features.
+                </p>
+              </div>
+            </div>
+
+            {/* Unlocked Capabilities List */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#070b14]/70 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs font-semibold">
+              <div className="text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                Features Unlocked Upon Sign-in:
+              </div>
+              <div className="space-y-2 text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <span>Full Live Database Access &amp; Real-Time Telemetry</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0" />
+                  <span>Submit &amp; Track Official Grievances with Photos &amp; SLA Timers</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                  <span>Smart Attendance 75% Tracker &amp; Geofenced QR Check-ins</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                  <span>24/7 Campus AI Copilot &amp; Emergency SOS Fast-Track</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setRole(demoModalRole);
+                  setAuthMode('login');
+                  setShowDemoModal(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-700 hover:to-purple-700 text-white font-black text-sm shadow-xl shadow-brand-500/30 transition-all transform hover:scale-102 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Proceed to Sign In as {roles.find(r => r.id === demoModalRole)?.name}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setRegForm(prev => ({ ...prev, role: demoModalRole }));
+                  setAuthMode('register');
+                  setShowDemoModal(false);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="w-full py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition cursor-pointer text-center"
+              >
+                Need an account? Register as {roles.find(r => r.id === demoModalRole)?.name}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
