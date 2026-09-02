@@ -20,14 +20,14 @@ const STORAGE_KEYS = {
 const INITIAL_USERS = [
   {
     _id: 'user_admin_001',
-    name: 'Campus Administrator',
+    name: 'Shubham Mishra (Campus Admin)',
     email: 'admin@campusfix.edu',
-    password: 'admin123',
+    password: 'Mishra@123',
     role: 'admin',
     department: 'Administration',
     employeeId: 'ADM-001',
     designation: 'Dean of Student Welfare & Campus Admin',
-    phone: '9876500000',
+    phone: '+91 98765 00001',
     isApproved: true,
     approvalStatus: 'approved',
     createdAt: new Date().toISOString()
@@ -308,29 +308,141 @@ const INITIAL_LOST_FOUND = [
 const INITIAL_EQUIPMENT = [
   {
     _id: 'eq_001',
+    code: 'PRJ-BLK-A-101',
     qrCode: 'EQ-BLK-A-101',
     name: 'Epson 4K Laser Classroom Projector',
-    equipmentType: 'Projector',
+    equipmentType: 'Classroom & AV',
+    category: 'Classroom & AV',
     building: 'Academic Block A',
+    room: 'Lecture Hall 101',
     roomNumber: 'Room 101',
     status: 'Operational',
     healthScore: 94,
+    riskLevel: 'Healthy',
+    operatingHours: 680,
+    breakdownCount: 1,
+    replacementAdvice: 'Unit operating within manufacturer tolerances. Filter cleaning advised in 45 days.',
+    vibrationMmS: 0.12,
+    temperatureC: 38.2,
     vibrationLevel: '0.12 g',
     operatingTemp: '38 °C',
+    lastServicedDate: '2026-02-01',
     lastServiced: '2026-02-01'
   },
   {
     _id: 'eq_002',
+    code: 'AC-SCI-LAB-04',
     qrCode: 'EQ-SCI-LAB-04',
     name: 'Schneider 3-Phase Laboratory Air Conditioner 2.5 Ton',
-    equipmentType: 'HVAC/AC',
+    equipmentType: 'HVAC & Cooling',
+    category: 'HVAC & Cooling',
     building: 'Science Block & Labs',
+    room: 'AI Computing Lab 4',
     roomNumber: 'AI Computing Lab 4',
     status: 'Needs Maintenance',
     healthScore: 68,
+    riskLevel: 'At Risk',
+    operatingHours: 2450,
+    breakdownCount: 4,
+    replacementAdvice: 'Compressor bearing vibration elevated (+18%). Schedule preventive overhaul before summer peak.',
+    vibrationMmS: 0.45,
+    temperatureC: 47.1,
     vibrationLevel: '0.45 g',
     operatingTemp: '47 °C',
+    lastServicedDate: '2025-11-15',
     lastServiced: '2025-11-15'
+  },
+  {
+    _id: 'eq_003',
+    code: 'GEN-SUB-01',
+    qrCode: 'EQ-GEN-SUB-01',
+    name: 'Kirloskar Substation 250 kVA Silent Diesel Generator',
+    equipmentType: 'Power & Electrical',
+    category: 'Power & Electrical',
+    building: 'Campus Utility Substation',
+    room: 'Power Generation Bay 1',
+    roomNumber: 'Substation Yard',
+    status: 'Operational',
+    healthScore: 91,
+    riskLevel: 'Healthy',
+    operatingHours: 320,
+    breakdownCount: 0,
+    replacementAdvice: 'Optimal grid backup status. Fuel line filter and lube oil inspection scheduled in 90 days.',
+    vibrationMmS: 0.18,
+    temperatureC: 42.0,
+    vibrationLevel: '0.18 g',
+    operatingTemp: '42 °C',
+    lastServicedDate: '2026-01-20',
+    lastServiced: '2026-01-20'
+  },
+  {
+    _id: 'eq_004',
+    code: 'PMP-HYD-02',
+    qrCode: 'EQ-PMP-HYD-02',
+    name: 'Grundfos Hydro-Pneumatic Multi-Stage Booster Pump',
+    equipmentType: 'Plumbing & Hydraulics',
+    category: 'Plumbing & Hydraulics',
+    building: 'Central Water Utility Tower',
+    room: 'Pump House Ground Floor',
+    roomNumber: 'Pump House',
+    status: 'Critical Alert',
+    healthScore: 34,
+    riskLevel: 'Critical',
+    operatingHours: 5890,
+    breakdownCount: 7,
+    replacementAdvice: 'RECOMMEND IMMEDIATE REPLACEMENT. Impeller cavitation detected; repairing will exceed 65% of replacement cost.',
+    vibrationMmS: 0.89,
+    temperatureC: 62.4,
+    vibrationLevel: '0.89 g',
+    operatingTemp: '62 °C',
+    lastServicedDate: '2025-08-10',
+    lastServiced: '2025-08-10'
+  },
+  {
+    _id: 'eq_005',
+    code: 'SW-NET-01',
+    qrCode: 'EQ-SW-NET-01',
+    name: 'Cisco Catalyst 9300 48-Port PoE+ Core Switch',
+    equipmentType: 'IT & Networking',
+    category: 'IT & Networking',
+    building: 'Academic Block A',
+    room: 'Server Rack Room 204',
+    roomNumber: 'Server Room 204',
+    status: 'Operational',
+    healthScore: 97,
+    riskLevel: 'Healthy',
+    operatingHours: 4200,
+    breakdownCount: 0,
+    replacementAdvice: 'All 48 gigabit interfaces operating with zero packet drop. Power redundancy at 100%.',
+    vibrationMmS: 0.05,
+    temperatureC: 34.1,
+    vibrationLevel: '0.05 g',
+    operatingTemp: '34 °C',
+    lastServicedDate: '2026-02-10',
+    lastServiced: '2026-02-10'
+  },
+  {
+    _id: 'eq_006',
+    code: 'LIFT-BLK-A',
+    qrCode: 'EQ-LIFT-BLK-A',
+    name: 'OTIS Gen2 8-Passenger Traction Elevator',
+    equipmentType: 'Mechanical & Elevators',
+    category: 'Mechanical & Elevators',
+    building: 'Academic Block A',
+    room: 'Main Atrium Shaft',
+    roomNumber: 'Ground Floor Atrium',
+    status: 'Needs Maintenance',
+    healthScore: 62,
+    riskLevel: 'At Risk',
+    operatingHours: 3800,
+    breakdownCount: 3,
+    replacementAdvice: 'Guide rail lubrication due. Door sensor alignment recommended to prevent false safety interlocks.',
+    vibrationMmS: 0.42,
+    temperatureC: 39.8,
+    vibrationLevel: '0.42 g',
+    operatingTemp: '40 °C',
+    lastServicedDate: '2025-12-05',
+    lastServiced: '2025-12-05'
   }
 ];
 
@@ -421,16 +533,18 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
       }
     }
 
-    // Admin email matching
-    if (normEmail === 'admin@campusfix.edu' || normEmail === 'admin' || normEmail.startsWith('admin@')) {
+    // Admin email matching (Shubham Mishra)
+    if (normEmail === 'admin@campusfix.edu' || normEmail === 'admin' || normEmail.startsWith('admin@') || normEmail.includes('shubham')) {
       const adminUser = users.find(u => u.role === 'admin') || INITIAL_USERS[0];
+      adminUser.name = 'Shubham Mishra (Campus Admin)';
+      adminUser.password = 'Mishra@123';
       const token = `mock_jwt_token_admin_${Date.now()}`;
       return {
         data: {
           success: true,
           token,
           user: adminUser,
-          message: 'Admin Sign in successful'
+          message: 'Welcome back, Shubham Mishra! Admin Command Center active.'
         }
       };
     }
@@ -611,13 +725,64 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
   }
 
   if (cleanUrl.startsWith('/admin/users')) {
+    const rawPath = cleanUrl.split('?')[0];
+    const pathParts = rawPath.split('/');
+    const targetUserId = pathParts[3];
+    const action = pathParts[4]; // 'approve', 'reject', 'promote-team'
+
+    // Handle PUT mutations on users
+    if (method === 'PUT' && targetUserId) {
+      const idx = users.findIndex(u => u._id === targetUserId);
+      if (idx !== -1) {
+        if (action === 'approve') {
+          users[idx].isApproved = true;
+          users[idx].approvalStatus = 'approved';
+          setCollection(STORAGE_KEYS.USERS, users);
+          return { data: { success: true, message: 'User approved successfully!', user: users[idx] } };
+        }
+        if (action === 'reject') {
+          users[idx].isApproved = false;
+          users[idx].approvalStatus = 'rejected';
+          setCollection(STORAGE_KEYS.USERS, users);
+          return { data: { success: true, message: 'User registration rejected.', user: users[idx] } };
+        }
+        if (action === 'promote-team') {
+          users[idx].role = 'teammember';
+          users[idx].isApproved = true;
+          users[idx].approvalStatus = 'approved';
+          setCollection(STORAGE_KEYS.USERS, users);
+          return { data: { success: true, message: 'User promoted to Core Team Member!', user: users[idx] } };
+        }
+
+        // Generic field updates (isActive, role)
+        if (data) {
+          if (data.isActive !== undefined) users[idx].isActive = data.isActive;
+          if (data.role) users[idx].role = data.role;
+        }
+        setCollection(STORAGE_KEYS.USERS, users);
+        return { data: { success: true, message: 'User updated successfully', user: users[idx] } };
+      }
+    }
+
+    // Handle GET /admin/users with query filtering
+    let filteredUsers = [...users];
+    if (cleanUrl.includes('role=')) {
+      const roleMatch = cleanUrl.match(/role=([^&]+)/);
+      if (roleMatch && roleMatch[1]) {
+        const queryRole = decodeURIComponent(roleMatch[1]).toLowerCase().trim();
+        if (queryRole !== 'all') {
+          filteredUsers = filteredUsers.filter(u => (u.role || '').toLowerCase() === queryRole);
+        }
+      }
+    }
     return {
       data: {
         success: true,
-        users: users
+        users: filteredUsers
       }
     };
   }
+
 
   if (cleanUrl.startsWith('/admin/complaints')) {
     return {
@@ -673,12 +838,46 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     throw err;
   }
 
-  if (cleanUrl.startsWith('/complaints') && method === 'GET') {
+  // Single complaint details: /complaints/:id
+  if (cleanUrl.startsWith('/complaints/') && method === 'GET' && !cleanUrl.startsWith('/complaints/track/')) {
+    const rawId = cleanUrl.split('/complaints/')[1].split('?')[0];
+    const comp = complaints.find(c => c._id === rawId || c.ticketId?.toLowerCase() === rawId.toLowerCase()) || complaints[0];
+    if (comp) {
+      return {
+        data: {
+          success: true,
+          complaint: comp,
+          timeline: comp.timeline || []
+        }
+      };
+    }
+  }
+
+  // Complaints list with query parameter filtering: /complaints?status=...&building=...&my=true
+  if ((cleanUrl === '/complaints' || cleanUrl.startsWith('/complaints?')) && method === 'GET') {
+    let filteredList = [...complaints];
+    
+    // Status filter
+    const statusMatch = cleanUrl.match(/[?&]status=([^&]+)/);
+    if (statusMatch && statusMatch[1]) {
+      const st = decodeURIComponent(statusMatch[1]).toLowerCase();
+      if (st !== 'all') {
+        filteredList = filteredList.filter(c => (c.status || '').toLowerCase() === st);
+      }
+    }
+
+    // Building filter
+    const bldMatch = cleanUrl.match(/[?&]building=([^&]+)/);
+    if (bldMatch && bldMatch[1]) {
+      const bld = decodeURIComponent(bldMatch[1]).toLowerCase();
+      filteredList = filteredList.filter(c => (c.building || '').toLowerCase().includes(bld));
+    }
+
     return {
       data: {
         success: true,
-        count: complaints.length,
-        complaints: complaints
+        count: filteredList.length,
+        complaints: filteredList
       }
     };
   }
@@ -730,17 +929,45 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
   if (cleanUrl.includes('/status') || cleanUrl.includes('/assign')) {
     const parts = cleanUrl.split('/');
     const id = parts[2];
-    const comp = complaints.find(c => c._id === id);
+    const comp = complaints.find(c => c._id === id || c.ticketId === id);
     if (comp) {
-      if (data.status) comp.status = data.status;
-      if (data.assignedTo) comp.assignedTo = users.find(u => u._id === data.assignedTo) || comp.assignedTo;
+      if (data?.status) comp.status = data.status;
+      if (data?.assignedTo || data?.staffId || data?.assignedStaffName) {
+        const staffObj = users.find(u => u._id === (data.assignedTo || data.staffId)) || {
+          _id: data.staffId || 'stf_assigned',
+          name: data.assignedStaffName || 'Assigned Technician',
+          phone: data.assignedStaffPhone || '+91 98765 00004',
+          department: 'Maintenance Wing',
+          role: 'staff'
+        };
+        comp.assignedTo = staffObj;
+      }
+      comp.timeline = comp.timeline || [];
       comp.timeline.push({
         status: comp.status,
-        message: data.remarks || `Status updated to ${comp.status}`,
+        message: data?.remarks || data?.internalNotes || `Status updated to ${comp.status}`,
         timestamp: new Date().toISOString()
       });
       setCollection(STORAGE_KEYS.COMPLAINTS, complaints);
-      return { data: { success: true, complaint: comp } };
+      return { data: { success: true, complaint: comp, message: 'Updated successfully' } };
+    }
+  }
+
+  if (cleanUrl.includes('/verify-feedback')) {
+    const id = cleanUrl.split('/')[2];
+    const comp = complaints.find(c => c._id === id || c.ticketId === id);
+    if (comp) {
+      comp.status = 'Resolved';
+      comp.feedback = data?.feedback || 'Resolution verified by student';
+      comp.rating = data?.rating || 5;
+      comp.timeline = comp.timeline || [];
+      comp.timeline.push({
+        status: 'Resolved',
+        message: `Student verified resolution: "${data?.feedback || 'Satisfied'}" (${data?.rating || 5} Stars)`,
+        timestamp: new Date().toISOString()
+      });
+      setCollection(STORAGE_KEYS.COMPLAINTS, complaints);
+      return { data: { success: true, complaint: comp, message: 'Resolution verified successfully!' } };
     }
   }
 
@@ -831,50 +1058,38 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     }
   }
 
-  // --- 7. ATTENDANCE ROUTES ---
-  if (cleanUrl.startsWith('/attendance/student-summary') || cleanUrl.startsWith('/attendance/my')) {
-    return { data: { success: true, summary: attendance.studentSummary, sessions: attendance.sessions } };
-  }
-
-  if (cleanUrl.startsWith('/attendance/policy')) {
-    return { data: { success: true, policy: attendance.policy } };
-  }
-
-  if (cleanUrl.startsWith('/attendance/sessions') || cleanUrl.startsWith('/attendance/active')) {
-    return { data: { success: true, sessions: attendance.sessions } };
-  }
-
-  if (cleanUrl.startsWith('/attendance/mark')) {
-    return {
-      data: {
-        success: true,
-        message: '🎉 Attendance marked successfully! Verified via RFID & Geofence GPS.',
-        status: 'Present',
-        timestamp: new Date().toISOString()
-      }
-    };
-  }
-
   // --- 8. EQUIPMENT & PREDICTIVE METRICS ---
   if (cleanUrl.startsWith('/equipment/predictive-metrics') || cleanUrl.startsWith('/equipment/metrics')) {
+    const healthyCount = equipment.filter(e => e.riskLevel === 'Healthy').length;
+    const atRiskCount = equipment.filter(e => e.riskLevel === 'At Risk').length;
+    const criticalCount = equipment.filter(e => e.riskLevel === 'Critical').length;
+    const avgHealth = Math.round(equipment.reduce((acc, e) => acc + (e.healthScore || 80), 0) / (equipment.length || 1));
+
+    const metricsData = {
+      totalMonitored: equipment.length,
+      healthyCount,
+      atRiskCount,
+      criticalCount,
+      averageFleetHealth: avgHealth,
+      overallFleetHealth: avgHealth,
+      avgVibration: 0.28,
+      avgTemp: 41.2
+    };
+
     return {
       data: {
         success: true,
+        equipment: equipment,
         equipmentList: equipment,
-        summary: {
-          totalMonitored: 48,
-          healthyCount: 42,
-          warningCount: 4,
-          criticalCount: 2,
-          overallFleetHealth: 92.4
-        }
+        metrics: metricsData,
+        summary: metricsData
       }
     };
   }
 
   if (cleanUrl.startsWith('/equipment/qr/')) {
     const code = cleanUrl.split('/qr/')[1];
-    const eq = equipment.find(e => e.qrCode.toLowerCase() === code.toLowerCase()) || equipment[0];
+    const eq = equipment.find(e => (e.qrCode || '').toLowerCase() === code.toLowerCase() || (e.code || '').toLowerCase() === code.toLowerCase()) || equipment[0];
     return { data: { success: true, equipment: eq } };
   }
 
@@ -898,27 +1113,6 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     return { data: { success: true, complaint: newComp, message: 'QR Issue Reported Successfully!' } };
   }
 
-  // --- 9. ADMIN METRICS & USER MANAGEMENT ---
-  if (cleanUrl.startsWith('/admin/dashboard-stats') || cleanUrl.startsWith('/admin/stats')) {
-    return {
-      data: {
-        success: true,
-        stats: {
-          totalComplaints: complaints.length,
-          pendingComplaints: complaints.filter(c => c.status === 'Pending').length,
-          inProgressComplaints: complaints.filter(c => c.status === 'In Progress').length,
-          resolvedComplaints: complaints.filter(c => c.status === 'Resolved').length,
-          totalUsers: users.length,
-          resolutionRate: '94.8%',
-          avgResolutionHours: '3.8'
-        }
-      }
-    };
-  }
-
-  if (cleanUrl.startsWith('/admin/users')) {
-    return { data: { success: true, users } };
-  }
 
   // --- 10. CHAT SYSTEM ---
   if (cleanUrl.startsWith('/chat/contacts')) {
@@ -927,7 +1121,7 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
         success: true,
         contacts: [
           { _id: 'c_ai', name: '🤖 CampusFix AI Copilot', role: 'ai', status: 'online' },
-          { _id: 'c_dean', name: '👑 Dean & Campus Administration', role: 'admin', status: 'online' },
+          { _id: 'c_dean', name: '👑 Dean & Campus Admin (Shubham Mishra)', role: 'admin', status: 'online' },
           { _id: 'c_hod', name: 'Prof. Anjali Verma (HOD CSE)', role: 'hod', status: 'online' },
           { _id: 'c_staff', name: 'Ramesh Electrician (Maintenance)', role: 'staff', status: 'online' },
           { _id: 'c_team', name: 'Core Operations Team Lead', role: 'teammember', status: 'online' }

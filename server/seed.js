@@ -44,14 +44,14 @@ const seedData = async () => {
 
     // 1. Create Core Users
     const admin = await User.create({
-      name: 'Campus Administrator',
+      name: 'Shubham Mishra (Campus Admin)',
       email: process.env.ADMIN_EMAIL || 'admin@campusfix.edu',
-      password: process.env.ADMIN_PASSWORD || 'Admin@Campus2026',
+      password: process.env.ADMIN_PASSWORD || 'Mishra@123',
       role: 'admin',
       department: 'Administration',
       employeeId: 'ADM-001',
       designation: 'Dean of Student Welfare & Campus Admin',
-      phone: '+91 98765 00000'
+      phone: '+91 98765 00001'
     });
 
     const hod = await User.create({
@@ -647,7 +647,7 @@ const seedData = async () => {
     console.log('=================================================');
     console.log(' Database Seeded Successfully!');
     console.log(' Ready to use accounts:');
-    console.log(' Admin:   admin@campusfix.edu / (configured in .env)');
+    console.log(' Admin:   admin@campusfix.edu / Mishra@123');
     console.log(' Student: student@campusfix.edu / password123');
     console.log(' Faculty: faculty@campusfix.edu / password123');
     console.log(' Staff:   staff@campusfix.edu   / password123');

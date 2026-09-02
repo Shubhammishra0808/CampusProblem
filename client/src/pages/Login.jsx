@@ -381,11 +381,47 @@ const Login = () => {
   // Login Method: 'password' | 'otp'
   const [loginMethod, setLoginMethod] = useState('password');
 
+  // Demo credentials for seamless instant showcase
+  const demoRoleCredentials = {
+    student: { email: 'student@campusfix.edu', password: 'password123', label: 'Student Community' },
+    faculty: { email: 'faculty@campusfix.edu', password: 'password123', label: 'Faculty Workstation' },
+    hod: { email: 'hod@campusfix.edu', password: 'password123', label: 'HOD Suite' },
+    staff: { email: 'staff@campusfix.edu', password: 'password123', label: 'Staff Desk' },
+    teammember: { email: 'team@campusfix.edu', password: 'password123', label: 'Core Team Operations' },
+    admin: { email: 'admin@campusfix.edu', password: 'Mishra@123', label: 'Campus Admin Command' }
+  };
+
   // Password Login State
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [email, setEmail] = useState('student@campusfix.edu');
+  const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSelectRole = (roleId) => {
+    setRole(roleId);
+    setError('');
+    const cred = demoRoleCredentials[roleId];
+    if (cred) {
+      setEmail(cred.email);
+      setPassword(cred.password);
+    }
+  };
+
+  const handleInstantDemoLogin = async (targetRole) => {
+    const r = targetRole || role;
+    setError('');
+    setLoading(true);
+    const cred = demoRoleCredentials[r] || demoRoleCredentials.student;
+    try {
+      const data = await login(cred.email, cred.password);
+      handleRoleRedirect(data?.user?.role || r);
+    } catch (err) {
+      console.error(err);
+      setError('Instant demo sign-in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // OTP Form State
   const [phone, setPhone] = useState('');
@@ -1110,10 +1146,7 @@ const Login = () => {
                             <button
                               key={r.id}
                               type="button"
-                              onClick={() => {
-                                setRole(r.id);
-                                setError('');
-                              }}
+                              onClick={() => handleSelectRole(r.id)}
                               className={`p-2 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center cursor-pointer transform active:scale-95 ${
                                 isSelected
                                   ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-300 ring-1 ring-brand-500/30 scale-102 font-black shadow-xs'
@@ -1125,6 +1158,20 @@ const Login = () => {
                             </button>
                           );
                         })}
+                      </div>
+
+                      {/* 1-Click Fast Enter Banner */}
+                      <div className="mt-2.5">
+                        <button
+                          type="button"
+                          onClick={() => handleInstantDemoLogin(role)}
+                          disabled={loading}
+                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-700 hover:to-indigo-700 text-white font-black text-xs shadow-md shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 active:scale-98"
+                        >
+                          <Zap className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                          <span>⚡ 1-Click Instant Enter as {roles.find(r => r.id === role)?.name}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
 

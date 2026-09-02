@@ -28,7 +28,7 @@ import {
 import api from '../services/api';
 
 const Navbar = ({ onToggleSidebar, sidebarOpen, onOpenSOS, onOpenAI }) => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, login, logout } = useContext(AuthContext);
   const { darkMode, toggleTheme } = useContext(ThemeContext);
   const { language, setLanguage, t, currentLanguage } = useLanguage();
   
@@ -366,6 +366,44 @@ const Navbar = ({ onToggleSidebar, sidebarOpen, onOpenSOS, onOpenAI }) => {
                       <span className={`inline-block mt-1 text-[9px] font-bold px-1.5 py-0.2 rounded capitalize border ${roleBadgeStyle[user.role] || 'bg-slate-100 text-slate-700'}`}>
                         {user.role} • {user.department}
                       </span>
+                    </div>
+                  </div>
+
+                  {/* Quick Switch Role Option */}
+                  <div className="py-2 px-3 border-t border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/40 space-y-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block px-1">
+                      ⚡ Quick Switch Role / Portal
+                    </span>
+                    <div className="grid grid-cols-3 gap-1">
+                      {[
+                        { r: 'student', name: 'Student', path: '/student', email: 'student@campusfix.edu' },
+                        { r: 'faculty', name: 'Faculty', path: '/faculty', email: 'faculty@campusfix.edu' },
+                        { r: 'hod', name: 'HOD', path: '/hod', email: 'hod@campusfix.edu' },
+                        { r: 'staff', name: 'Staff', path: '/staff', email: 'staff@campusfix.edu' },
+                        { r: 'teammember', name: 'Team', path: '/team-dashboard', email: 'team@campusfix.edu' },
+                        { r: 'admin', name: 'Admin', path: '/admin', email: 'admin@campusfix.edu' }
+                      ].map(item => (
+                        <button
+                          key={item.r}
+                          type="button"
+                          onClick={async () => {
+                            setShowUserMenu(false);
+                            try {
+                              await login(item.email, item.r === 'admin' ? 'Mishra@123' : 'password123');
+                              navigate(item.path);
+                            } catch (e) {
+                              navigate(item.path);
+                            }
+                          }}
+                          className={`px-1.5 py-1 rounded-lg text-[10px] font-black transition cursor-pointer text-center truncate ${
+                            user.role === item.r
+                              ? 'bg-brand-600 text-white shadow-xs'
+                              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                          }`}
+                        >
+                          {item.name}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
