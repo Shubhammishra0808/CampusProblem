@@ -3,9 +3,9 @@ import React, { createContext, useState, useEffect } from 'react';
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Always strictly start in Dark Mode
+  // Always strictly start in Light Mode on any device
   const [darkMode, setDarkMode] = useState(() => {
-    return true;
+    return false;
   });
 
   useEffect(() => {
