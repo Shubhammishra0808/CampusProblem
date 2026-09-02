@@ -388,23 +388,18 @@ const Login = () => {
     hod: { email: 'hod@campusfix.edu', password: 'password123', label: 'HOD Suite' },
     staff: { email: 'staff@campusfix.edu', password: 'password123', label: 'Staff Desk' },
     teammember: { email: 'team@campusfix.edu', password: 'password123', label: 'Core Team Operations' },
-    admin: { email: 'admin@campusfix.edu', password: 'Mishra@123', label: 'Campus Admin Command' }
+    admin: { email: 'shubhammishra23082004@gmail.com', password: 'shubham@123', label: 'Campus Admin Command' }
   };
 
-  // Password Login State
+  // Password Login State - Start empty without automatic pre-fill
   const [role, setRole] = useState('student');
-  const [email, setEmail] = useState('student@campusfix.edu');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSelectRole = (roleId) => {
     setRole(roleId);
     setError('');
-    const cred = demoRoleCredentials[roleId];
-    if (cred) {
-      setEmail(cred.email);
-      setPassword(cred.password);
-    }
   };
 
   const handleInstantDemoLogin = async (targetRole) => {

@@ -21,8 +21,8 @@ const INITIAL_USERS = [
   {
     _id: 'user_admin_001',
     name: 'Shubham Mishra (Campus Admin)',
-    email: 'admin@campusfix.edu',
-    password: 'Mishra@123',
+    email: 'shubhammishra23082004@gmail.com',
+    password: 'shubham@123',
     role: 'admin',
     department: 'Administration',
     employeeId: 'ADM-001',
@@ -534,10 +534,11 @@ export const handleMockRequest = async (method, url, data = null, headers = {}) 
     }
 
     // Admin email matching (Shubham Mishra)
-    if (normEmail === 'admin@campusfix.edu' || normEmail === 'admin' || normEmail.startsWith('admin@') || normEmail.includes('shubham')) {
+    if (normEmail === 'shubhammishra23082004@gmail.com' || normEmail === 'admin@campusfix.edu' || normEmail === 'admin' || normEmail.startsWith('admin@') || normEmail.includes('shubham')) {
       const adminUser = users.find(u => u.role === 'admin') || INITIAL_USERS[0];
       adminUser.name = 'Shubham Mishra (Campus Admin)';
-      adminUser.password = 'Mishra@123';
+      adminUser.email = 'shubhammishra23082004@gmail.com';
+      adminUser.password = 'shubham@123';
       const token = `mock_jwt_token_admin_${Date.now()}`;
       return {
         data: {

@@ -381,7 +381,7 @@ const Navbar = ({ onToggleSidebar, sidebarOpen, onOpenSOS, onOpenAI }) => {
                         { r: 'hod', name: 'HOD', path: '/hod', email: 'hod@campusfix.edu' },
                         { r: 'staff', name: 'Staff', path: '/staff', email: 'staff@campusfix.edu' },
                         { r: 'teammember', name: 'Team', path: '/team-dashboard', email: 'team@campusfix.edu' },
-                        { r: 'admin', name: 'Admin', path: '/admin', email: 'admin@campusfix.edu' }
+                        { r: 'admin', name: 'Admin', path: '/admin', email: 'shubhammishra23082004@gmail.com' }
                       ].map(item => (
                         <button
                           key={item.r}
@@ -389,7 +389,7 @@ const Navbar = ({ onToggleSidebar, sidebarOpen, onOpenSOS, onOpenAI }) => {
                           onClick={async () => {
                             setShowUserMenu(false);
                             try {
-                              await login(item.email, item.r === 'admin' ? 'Mishra@123' : 'password123');
+                              await login(item.email, item.r === 'admin' ? 'shubham@123' : 'password123');
                               navigate(item.path);
                             } catch (e) {
                               navigate(item.path);
